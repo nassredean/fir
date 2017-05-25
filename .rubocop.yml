@@ -1,0 +1,7 @@
+AllCops:
+  TargetRubyVersion: 2.4.1
+
+Style/Documentation:
+  Description: >-
+                 Checks for missing top-level documentation of classes and modules.
+  Enabled: false

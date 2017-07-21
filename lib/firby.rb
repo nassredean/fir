@@ -2,26 +2,44 @@
 # encoding: UTF-8
 
 require 'io/console'
+# --TODO: I think we need to refactor the tracking of lines to an array of arrays instead of one char array split by newlines
+# --TODO: Get backspace working
 
 module Firby
   class Repl
     def self.start(input, output)
+      firby = self.new(input, output)
+    end
+
+    def initialize(input, output)
       with_raw_io(input, output) do |i, o|
-        loop do
-          CharacterHandlerFactory.build(get_char(i), i, o).call
-        end
+        repl([], i, o)
       end
     end
 
-    def self.with_raw_io(input, output)
+    private
+
+    def with_raw_io(input, output)
       input.raw do |i|
         output.raw do |o|
-          yield(i, o)
+          return yield(i, o) if block_given?
         end
       end
     end
 
-    def self.get_char(input)
+    def repl(line, input, output)
+      line = yield(line) if block_given?
+      repl(line, input, output) do |l|
+        read_and_dispatch_key(l, input, output)
+      end
+    end
+
+    def read_and_dispatch_key(line, input, output)
+      char = get_char_from_key(input)
+      KeyCommandFactory.build(char, line, input, output).execute
+    end
+
+    def get_char_from_key(input)
       key = input.sysread(1).chr
       if key == "\e"
         special_key_thread = Thread.new do
@@ -35,75 +53,112 @@ module Firby
   end
 end
 
-class CharacterHandlers
+class KeyCommandFactory
+  def self.build(character, line, input, output)
+    KeyCommandRegistery
+      .find(character)
+      .new(character, line, input, output)
+  end
+end
+
+class KeyCommandRegistery
   def self.find(character)
     all.detect { |handler| handler.match?(character) }
   end
 
   def self.all
     [
-      TabHandler,
-      EnterHandler,
-      BackspaceHandler,
-      CtrlCHandler,
-      EscapeHandler,
-      SingleCharacterHandler
+      TabCommand,
+      EnterCommand,
+      BackspaceCommand,
+      CtrlCCommand,
+      EscapeCommand,
+      SingleKeyCommand
     ]
   end
 end
 
-CharacterHandler = Struct.new(:character, :input, :output)
+class KeyCommand
+  attr_reader :character
+  attr_reader :line
+  attr_reader :input
+  attr_reader :output
 
-class TabHandler < CharacterHandler
   def self.match?(character)
+    char_code.match(character)
+  end
+
+  def self.char_code
+    /.*/
+  end
+
+  def initialize(character, line, input, output)
+    @character = character.dup
+    @line = line.dup
+    @input = input
+    @output = output
+  end
+
+  def execute
+    line
+  end
+end
+
+class TabCommand < KeyCommand
+  def self.match?(_character)
     false
   end
 end
 
-class BackspaceHandler < CharacterHandler
-  def self.match?(character)
+class BackspaceCommand < KeyCommand
+  def self.match?(_character)
     false
   end
 end
 
-class EnterHandler < CharacterHandler
-  def self.match?(character)
-    character == "\r"
+class EnterCommand < KeyCommand
+  def self.char_code
+    /\r/
   end
 
-  def call
-    output.syswrite("\n")
+  def execute
+    line << "\n"
+    output.syswrite("\n" + Cursor.back(line.length - 1))
+    line
   end
 end
 
-class EscapeHandler < CharacterHandler
-  def self.match?(character)
+class EscapeCommand < KeyCommand
+  def self.match?(_character)
     false
   end
 end
 
-class SingleCharacterHandler < CharacterHandler
-  def self.match?(character)
-    character.match(/^.$/)
+class SingleKeyCommand < KeyCommand
+  def self.char_code
+    # Matches all printable ASCII characters
+    /[ -~]/
   end
 
-  def call
+  def execute
+    line << character
     output.syswrite(character)
+    line
   end
 end
 
-class CtrlCHandler < CharacterHandler
-  def self.match?(character)
-    character == "\u0003"
+class CtrlCCommand < KeyCommand
+  def self.char_code
+    /\u0003/
   end
 
-  def call
+  def execute
     exit(0)
   end
 end
 
-class CharacterHandlerFactory
-  def self.build(character, input, output)
-    CharacterHandlers.find(character).new(character, input, output)
+class Cursor
+  def self.back(n)
+    "\e[#{n}D"
   end
 end

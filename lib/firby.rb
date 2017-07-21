@@ -7,21 +7,31 @@ module Firby
   class Repl
     def self.start(input, output)
       with_raw_io(input, output) do |i, o|
-        loop do
-          CharacterHandlerFactory.build(get_char(i), i, o).call
-        end
+        repl([], i, o)
+      end
+    end
+
+    def self.read_and_dispatch_key(line, input, output)
+      char = get_char_from_key(input)
+      CharacterHandlerFactory.build(char, line, input, output).call
+    end
+
+    def self.repl(line, input, output)
+      line = yield(line) if block_given?
+      repl(line, input, output) do |l|
+        read_and_dispatch_key(l, input, output)
       end
     end
 
     def self.with_raw_io(input, output)
       input.raw do |i|
         output.raw do |o|
-          yield(i, o)
+          return yield(i, o) if block_given?
         end
       end
     end
 
-    def self.get_char(input)
+    def self.get_char_from_key(input)
       key = input.sysread(1).chr
       if key == "\e"
         special_key_thread = Thread.new do
@@ -52,7 +62,17 @@ class CharacterHandlers
   end
 end
 
-CharacterHandler = Struct.new(:character, :input, :output)
+class Cursor
+  def self.back(n)
+    "\e[#{n}D"
+  end
+end
+
+CharacterHandler = Struct.new(:character, :line, :input, :output) do
+  def call
+    line
+  end
+end
 
 class TabHandler < CharacterHandler
   def self.match?(character)
@@ -73,6 +93,8 @@ class EnterHandler < CharacterHandler
 
   def call
     output.syswrite("\n")
+    line << "\n"
+    super
   end
 end
 
@@ -89,6 +111,8 @@ class SingleCharacterHandler < CharacterHandler
 
   def call
     output.syswrite(character)
+    line << character
+    super
   end
 end
 
@@ -103,7 +127,7 @@ class CtrlCHandler < CharacterHandler
 end
 
 class CharacterHandlerFactory
-  def self.build(character, input, output)
-    CharacterHandlers.find(character).new(character, input, output)
+  def self.build(character, line, input, output)
+    CharacterHandlers.find(character).new(character, line, input, output)
   end
 end

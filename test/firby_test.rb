@@ -12,7 +12,7 @@ describe SingleCharacterHandler do
     end
 
     it 'must add the character to output' do
-      SingleCharacterHandler.new('c', @input, @output).call
+      SingleCharacterHandler.new('c', [], @input, @output).call
       @output.output.must_equal(['c'])
     end
   end
@@ -24,7 +24,7 @@ describe SingleCharacterHandler do
     end
 
     it 'must add the new line character to the output' do
-      EnterHandler.new("\r", @input, @output).call
+      EnterHandler.new("\r", [], @input, @output).call
       @output.output.must_equal(["\n"])
     end
   end
@@ -37,7 +37,7 @@ describe SingleCharacterHandler do
 
     it 'must raise a SystemExit' do
       assert_raises SystemExit do
-        CtrlCHandler.new("\u0003", @input, @output).call
+        CtrlCHandler.new("\u0003", [], @input, @output).call
       end
     end
   end

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
+# encoding: UTF-8
 
 require 'minitest/autorun'
 require_relative '../lib/firby'
 require 'pry'
 
-describe SingleCharacterHandler do
+describe CharacterHandlers do
   describe 'Single character input' do
     before do
       @input = MockIO::InputMock.new
@@ -13,19 +14,35 @@ describe SingleCharacterHandler do
 
     it 'must add the character to output' do
       SingleCharacterHandler.new('c', [], @input, @output).call
-      @output.output.must_equal(['c'])
+      @output.output.must_equal('c')
     end
   end
 
   describe 'Enter input' do
-    before do
-      @input = MockIO::InputMock.new
-      @output = MockIO::OutputMock.new
+    describe 'With no preceeding lines' do
+      before do
+        @input = MockIO::InputMock.new
+        @output = MockIO::OutputMock.new
+      end
+
+      it 'must add the new line character to the output' do
+        previous_line = []
+        EnterHandler.new("\r", previous_line, @input, @output).call
+        @output.output.must_equal("\n#{Cursor.back(previous_line.length)}")
+      end
     end
 
-    it 'must add the new line character to the output' do
-      EnterHandler.new("\r", [], @input, @output).call
-      @output.output.must_equal(["\n"])
+    describe 'With single preceeding line' do
+      before do
+        @input = MockIO::InputMock.new
+        @output = MockIO::OutputMock.new
+      end
+
+      it 'must add the new line character and the cursor back character for each character on the preceeding line' do
+        previous_line = ['a', 'b', 'c']
+        EnterHandler.new("\r", previous_line, @input, @output).call
+        @output.output.must_equal("\n#{Cursor.back(previous_line.length)}")
+      end
     end
   end
 
@@ -56,11 +73,11 @@ module MockIO
     attr_reader :output
 
     def initialize
-      @output = []
+      @output = ''
     end
 
-    def syswrite(character)
-      @output << character
+    def syswrite(string)
+      @output = "#{@ouput.to_s}#{string}"
     end
   end
 end

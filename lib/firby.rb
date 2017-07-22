@@ -11,9 +11,12 @@ module Firby
       end
     end
 
-    def self.read_and_dispatch_key(line, input, output)
-      char = get_char_from_key(input)
-      CharacterHandlerFactory.build(char, line, input, output).call
+    def self.with_raw_io(input, output)
+      input.raw do |i|
+        output.raw do |o|
+          return yield(i, o) if block_given?
+        end
+      end
     end
 
     def self.repl(line, input, output)
@@ -23,12 +26,9 @@ module Firby
       end
     end
 
-    def self.with_raw_io(input, output)
-      input.raw do |i|
-        output.raw do |o|
-          return yield(i, o) if block_given?
-        end
-      end
+    def self.read_and_dispatch_key(line, input, output)
+      char = get_char_from_key(input)
+      CharacterHandlerFactory.build(char, line, input, output).call
     end
 
     def self.get_char_from_key(input)
@@ -68,7 +68,19 @@ class Cursor
   end
 end
 
-CharacterHandler = Struct.new(:character, :line, :input, :output) do
+class CharacterHandler
+  attr_reader :character
+  attr_reader :line
+  attr_reader :input
+  attr_reader :output
+
+  def initialize(character, line, input, output)
+    @character = character.dup
+    @line = line.dup
+    @input = input
+    @output = output
+  end
+
   def call
     line
   end
@@ -92,8 +104,8 @@ class EnterHandler < CharacterHandler
   end
 
   def call
-    output.syswrite("\n")
     line << "\n"
+    output.syswrite("\n" + Cursor.back(line.length - 1))
     super
   end
 end
@@ -110,8 +122,8 @@ class SingleCharacterHandler < CharacterHandler
   end
 
   def call
-    output.syswrite(character)
     line << character
+    output.syswrite(character)
     super
   end
 end

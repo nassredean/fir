@@ -74,6 +74,14 @@ class CharacterHandler
   attr_reader :input
   attr_reader :output
 
+  def self.match?(character)
+    char_code.match(character)
+  end
+
+  def self.char_code
+    raise 'Method not implemented'
+  end
+
   def initialize(character, line, input, output)
     @character = character.dup
     @line = line.dup
@@ -87,20 +95,20 @@ class CharacterHandler
 end
 
 class TabHandler < CharacterHandler
-  def self.match?(character)
+  def self.match?(_character)
     false
   end
 end
 
 class BackspaceHandler < CharacterHandler
-  def self.match?(character)
+  def self.match?(_character)
     false
   end
 end
 
 class EnterHandler < CharacterHandler
-  def self.match?(character)
-    character == "\r"
+  def self.char_code
+    /\r/
   end
 
   def call
@@ -111,14 +119,14 @@ class EnterHandler < CharacterHandler
 end
 
 class EscapeHandler < CharacterHandler
-  def self.match?(character)
+  def self.match?(_character)
     false
   end
 end
 
 class SingleCharacterHandler < CharacterHandler
-  def self.match?(character)
-    character.match(/^.$/)
+  def self.char_code
+    /^.$/
   end
 
   def call
@@ -129,8 +137,8 @@ class SingleCharacterHandler < CharacterHandler
 end
 
 class CtrlCHandler < CharacterHandler
-  def self.match?(character)
-    character == "\u0003"
+  def self.char_code
+    /\u0003/
   end
 
   def call

@@ -126,7 +126,8 @@ end
 
 class SingleCharacterHandler < CharacterHandler
   def self.char_code
-    /^.$/
+    # Matches all printable ASCII characters
+    /[ -~]/
   end
 
   def call

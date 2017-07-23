@@ -2,6 +2,9 @@
 # encoding: UTF-8
 
 require 'io/console'
+# --TODO: I think we need to refactor the tracking of lines to an array of arrays instead of one char array split by newlines
+# --TODO: Get backspace working
+# --TODO: Repl.start should insantiate a new repl class and then we won't need so many class methods
 
 module Firby
   class Repl
@@ -28,7 +31,7 @@ module Firby
 
     def self.read_and_dispatch_key(line, input, output)
       char = get_char_from_key(input)
-      CharacterHandlerFactory.build(char, line, input, output).call
+      KeyCommandFactory.build(char, line, input, output).execute
     end
 
     def self.get_char_from_key(input)
@@ -45,30 +48,32 @@ module Firby
   end
 end
 
-class CharacterHandlers
+class KeyCommandFactory
+  def self.build(character, line, input, output)
+    KeyCommandRegistery
+      .find(character)
+      .new(character, line, input, output)
+  end
+end
+
+class KeyCommandRegistery
   def self.find(character)
     all.detect { |handler| handler.match?(character) }
   end
 
   def self.all
     [
-      TabHandler,
-      EnterHandler,
-      BackspaceHandler,
-      CtrlCHandler,
-      EscapeHandler,
-      SingleCharacterHandler
+      TabCommand,
+      EnterCommand,
+      BackspaceCommand,
+      CtrlCCommand,
+      EscapeCommand,
+      SingleKeyCommand
     ]
   end
 end
 
-class Cursor
-  def self.back(n)
-    "\e[#{n}D"
-  end
-end
-
-class CharacterHandler
+class KeyCommand
   attr_reader :character
   attr_reader :line
   attr_reader :input
@@ -79,7 +84,7 @@ class CharacterHandler
   end
 
   def self.char_code
-    raise 'Method not implemented'
+    /.*/
   end
 
   def initialize(character, line, input, output)
@@ -89,66 +94,66 @@ class CharacterHandler
     @output = output
   end
 
-  def call
+  def execute
     line
   end
 end
 
-class TabHandler < CharacterHandler
+class TabCommand < KeyCommand
   def self.match?(_character)
     false
   end
 end
 
-class BackspaceHandler < CharacterHandler
+class BackspaceCommand < KeyCommand
   def self.match?(_character)
     false
   end
 end
 
-class EnterHandler < CharacterHandler
+class EnterCommand < KeyCommand
   def self.char_code
     /\r/
   end
 
-  def call
+  def execute
     line << "\n"
     output.syswrite("\n" + Cursor.back(line.length - 1))
-    super
+    line
   end
 end
 
-class EscapeHandler < CharacterHandler
+class EscapeCommand < KeyCommand
   def self.match?(_character)
     false
   end
 end
 
-class SingleCharacterHandler < CharacterHandler
+class SingleKeyCommand < KeyCommand
   def self.char_code
     # Matches all printable ASCII characters
     /[ -~]/
   end
 
-  def call
+  def execute
     line << character
     output.syswrite(character)
-    super
+    line
   end
 end
 
-class CtrlCHandler < CharacterHandler
+class CtrlCCommand < KeyCommand
   def self.char_code
     /\u0003/
   end
 
-  def call
+  def execute
     exit(0)
   end
 end
 
-class CharacterHandlerFactory
-  def self.build(character, line, input, output)
-    CharacterHandlers.find(character).new(character, line, input, output)
+class Cursor
+  def self.back(n)
+    "\e[#{n}D"
   end
 end

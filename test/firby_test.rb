@@ -13,9 +13,9 @@ describe 'Key Commands' do
 
   describe 'Single character input' do
     it 'must add the character to output' do
-      previous_line = []
-      new_line = SingleKeyCommand.new('c', previous_line, @input, @output).execute
-      new_line.must_equal(['c'])
+      lines = [[]]
+      new_lines = SingleKeyCommand.new('c', lines, @input, @output).execute
+      new_lines.must_equal([['c']])
       @output.output.must_equal('c')
     end
   end
@@ -23,19 +23,19 @@ describe 'Key Commands' do
   describe 'Enter input' do
     describe 'With no preceeding lines' do
       it 'must add the new line character to the output' do
-        previous_line = []
-        new_line = EnterCommand.new("\r", previous_line, @input, @output).execute
-        new_line.must_equal(["\n"])
-        @output.output.must_equal("\n#{Cursor.back(previous_line.length)}")
+        lines = [[]]
+        new_lines = EnterCommand.new("\r", lines, @input, @output).execute
+        new_lines.must_equal([[], []])
+        @output.output.must_equal("\n#{Cursor.back(0)}")
       end
     end
 
     describe 'With single preceeding line' do
       it 'must add the new line character and the cursor back character for each character on the preceeding line' do
-        previous_line = ['a', 'b', 'c']
-        new_line = EnterCommand.new("\r", previous_line, @input, @output).execute
-        new_line.must_equal(['a', 'b', 'c', "\n"])
-        @output.output.must_equal("\n#{Cursor.back(previous_line.length)}")
+        lines = [['a', 'b', 'c']]
+        new_lines = EnterCommand.new("\r", lines, @input, @output).execute
+        new_lines.must_equal([['a', 'b', 'c'], []])
+        @output.output.must_equal("\n#{Cursor.back(3)}")
       end
     end
   end

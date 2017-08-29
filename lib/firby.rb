@@ -2,7 +2,6 @@
 # encoding: UTF-8
 
 require 'io/console'
-# --TODO: I think we need to refactor the tracking of lines to an array of arrays instead of one char array split by newlines
 # --TODO: Get backspace working
 
 module Firby
@@ -13,7 +12,7 @@ module Firby
 
     def initialize(input, output)
       with_raw_io(input, output) do |i, o|
-        repl([], i, o)
+        repl([[]], i, o)
       end
     end
 
@@ -27,16 +26,16 @@ module Firby
       end
     end
 
-    def repl(line, input, output)
-      line = yield(line) if block_given?
-      repl(line, input, output) do |l|
+    def repl(lines, input, output)
+      lines = yield(lines) if block_given?
+      repl(lines, input, output) do |l|
         read_and_dispatch_key(l, input, output)
       end
     end
 
-    def read_and_dispatch_key(line, input, output)
+    def read_and_dispatch_key(lines, input, output)
       char = get_char_from_key(input)
-      KeyCommandFactory.build(char, line, input, output).execute
+      KeyCommandFactory.build(char, lines, input, output).execute
     end
 
     def get_char_from_key(input)
@@ -54,10 +53,10 @@ module Firby
 end
 
 class KeyCommandFactory
-  def self.build(character, line, input, output)
+  def self.build(character, lines, input, output)
     KeyCommandRegistery
       .find(character)
-      .new(character, line, input, output)
+      .new(character, lines, input, output)
   end
 end
 
@@ -80,7 +79,7 @@ end
 
 class KeyCommand
   attr_reader :character
-  attr_reader :line
+  attr_reader :lines
   attr_reader :input
   attr_reader :output
 
@@ -92,15 +91,15 @@ class KeyCommand
     /.*/
   end
 
-  def initialize(character, line, input, output)
+  def initialize(character, lines, input, output)
     @character = character.dup
-    @line = line.dup
+    @lines = lines.dup
     @input = input
     @output = output
   end
 
   def execute
-    line
+    lines
   end
 end
 
@@ -122,9 +121,9 @@ class EnterCommand < KeyCommand
   end
 
   def execute
-    line << "\n"
-    output.syswrite("\n" + Cursor.back(line.length - 1))
-    line
+    lines << []
+    output.syswrite("\n" + Cursor.back(lines[-2].length))
+    lines
   end
 end
 
@@ -141,9 +140,11 @@ class SingleKeyCommand < KeyCommand
   end
 
   def execute
-    line << character
+    current_line = lines[-1].dup
+    current_line << character
+    lines[-1] = current_line
     output.syswrite(character)
-    line
+    lines
   end
 end
 

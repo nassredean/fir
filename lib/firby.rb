@@ -4,17 +4,22 @@
 require 'io/console'
 # --TODO: I think we need to refactor the tracking of lines to an array of arrays instead of one char array split by newlines
 # --TODO: Get backspace working
-# --TODO: Repl.start should insantiate a new repl class and then we won't need so many class methods
 
 module Firby
   class Repl
     def self.start(input, output)
+      firby = self.new(input, output)
+    end
+
+    def initialize(input, output)
       with_raw_io(input, output) do |i, o|
         repl([], i, o)
       end
     end
 
-    def self.with_raw_io(input, output)
+    private
+
+    def with_raw_io(input, output)
       input.raw do |i|
         output.raw do |o|
           return yield(i, o) if block_given?
@@ -22,19 +27,19 @@ module Firby
       end
     end
 
-    def self.repl(line, input, output)
+    def repl(line, input, output)
       line = yield(line) if block_given?
       repl(line, input, output) do |l|
         read_and_dispatch_key(l, input, output)
       end
     end
 
-    def self.read_and_dispatch_key(line, input, output)
+    def read_and_dispatch_key(line, input, output)
       char = get_char_from_key(input)
       KeyCommandFactory.build(char, line, input, output).execute
     end
 
-    def self.get_char_from_key(input)
+    def get_char_from_key(input)
       key = input.sysread(1).chr
       if key == "\e"
         special_key_thread = Thread.new do

@@ -5,116 +5,194 @@ require 'minitest/autorun'
 require_relative '../lib/firby'
 require 'pry'
 
-describe 'Indent' do
-  it 'indents' do
-    indent = Firby::Indent.new([['d', 'e' 'f', ' ', 'c', 'o', 'w'], ['p', 'u', 't', 's', ' ', '"', 'm', 'o', 'o', '"'], ['e', 'n', 'd']])
-    indent.indentation.length.must_equal(0)
-    indent.should_dedent?.must_equal(true)
-    indent.should_evaluate?.must_equal(true)
-  end
-
-  it 'indents' do
-    indent = Firby::Indent.new([['d', 'e' 'f', ' ', 'c', 'o', 'w'], ['p', 'u', 't', 's', ' ', '"', 'm', 'o', 'o', '"']])
-    indent.indentation.length.must_equal(2)
-    indent.should_dedent?.must_equal(false)
-    indent.should_evaluate?.must_equal(false)
-  end
-end
-
 describe Firby do
-  before do
-    @input = MockIO::InputMock.new
-    @output = MockIO::OutputMock.new
-  end
-
-  describe 'Single character input' do
-    it 'must add the character to output' do
-      lines = [[]]
-      new_lines = Firby::SingleKeyCommand.new('c', lines, @input, @output).execute
-      new_lines.must_equal([['c']])
-      @output.output.must_equal('c')
+  describe Firby::KeyCommand::SingleKeyCommand do
+    before do
+      @old_state = Firby::ReplState.new_state
+      @new_state = Firby::KeyCommand::SingleKeyCommand.new('c', @old_state).execute
     end
-  end
 
-  describe 'Enter input' do
-    describe 'With no preceeding lines' do
-      it 'must add the new line character to the output' do
-        lines = [[]]
-        new_lines = Firby::EnterCommand.new("\r", lines, @input, @output).execute
-        new_lines.must_equal([[], []])
-        @output.output.must_equal("\n#{Firby::Cursor.back(0)}")
+    it 'adds the character to the states current line and updates the cursor' do
+      @new_state.lines.must_equal([['c']])
+      @new_state.cursor.x.must_equal(1)
+      @new_state.cursor.y.must_equal(0)
+    end
+
+    describe Firby::Screen do
+      before do
+        @output = MockIO::OutputMock.new
+        Firby::Screen.update(@old_state, @new_state, @output)
       end
-    end
 
-    describe 'With single preceeding line' do
-      it 'must add the new line character and the cursor back character for each character on the preceeding line' do
-        lines = [['a', 'b', 'c']]
-        new_lines = Firby::EnterCommand.new("\r", lines, @input, @output).execute
-        new_lines.must_equal([['a', 'b', 'c'], []])
-        @output.output.must_equal("\n#{Firby::Cursor.back(3)}")
+      it 'updates the screen correctly' do
+        @output.output.must_equal("\e[1G\e[0K\e[1G\e[0Kc")
       end
     end
   end
 
-  describe 'Backspace input' do
+  describe Firby::KeyCommand::EnterCommand do
+    describe 'with no preceeding lines' do
+      before do
+        @old_state = Firby::ReplState.new_state
+        @new_state = Firby::KeyCommand::EnterCommand.new("\r", @old_state).execute
+      end
 
-    describe 'With single line' do
-      it 'pops character off of last line in line array and draws a cursor back 1 with a clear' do
-        lines = [['a']]
-        new_lines = Firby::BackspaceCommand.new("\177", lines, @input, @output).execute
-        new_lines.must_equal([[]])
-        @output.output.must_equal("#{Firby::Cursor.back(1)}#{Firby::Cursor.clear(0)}")
+      it 'adds the new line to the states line array and updates the cursor' do
+        @new_state.lines.must_equal([[], []])
+        @new_state.cursor.x.must_equal(0)
+        @new_state.cursor.y.must_equal(1)
+      end
+
+      describe Firby::Screen do
+        before do
+          @output = MockIO::OutputMock.new
+          Firby::Screen.update(@old_state, @new_state, @output)
+        end
+
+        it 'updates the screen correctly' do
+          @output.output.must_equal("\e[1G\e[0K\e[1F\e[0K\e[1G\e[0K\n\e[1G")
+        end
       end
     end
 
-    describe 'With no preceeding lines' do
-      it 'adds no characters to the line array and draws a cursor back 0 with a clear' do
-        lines = [[]]
-        new_lines = Firby::BackspaceCommand.new("\177", lines, @input, @ouput).execute
-        new_lines.must_equal([[]])
-        @output.output.must_equal("")
+    describe 'with single preceeding line' do
+      before do
+        @old_state = Firby::ReplState.new([['a', 'b', 'c']], Firby::ReplState::Cursor.new(3, 0))
+        @new_state = Firby::KeyCommand::EnterCommand.new("\r", @old_state).execute
       end
-    end
 
-    describe 'With preceeding line containing no characters' do
-      it 'pops line off of line array and draws a cursor up' do
-        lines = [[], []]
-        @output.class
-        new_lines = Firby::BackspaceCommand.new("\177", lines, @input, @output).execute
-        new_lines.must_equal([[]])
-        @output.output.must_equal("#{Firby::Cursor.up(1)}")
+      it 'adds the new line to the line array and updates the cursor' do
+        @new_state.lines.must_equal([['a', 'b', 'c'], []])
+        @new_state.cursor.x.must_equal(0)
+        @new_state.cursor.y.must_equal(1)
+      end
+
+      describe Firby::Screen do
+        before do
+          @output = MockIO::OutputMock.new
+          Firby::Screen.update(@old_state, @new_state, @output)
+        end
+
+        it 'updates the screen correctly' do
+          @output.output.must_equal("\e[1G\e[0K\e[1F\e[0K\e[1G\e[0Kabc\n\e[1G")
+        end
       end
     end
   end
 
-  describe 'With preceeding line containing characters' do
-    it 'pops line off of line array and draws a cursor up and then forward' do
-      lines = [['a'], []]
-      @output.class
-      new_lines = Firby::BackspaceCommand.new("\177", lines, @input, @output).execute
-      new_lines.must_equal([['a']])
-      @output.output.must_equal("#{Firby::Cursor.up(1)}#{Firby::Cursor.forward(1)}")
+  describe Firby::KeyCommand::BackspaceCommand do
+    describe 'with single line that has no characters' do
+      before do
+        @old_state = Firby::ReplState.new_state
+        @new_state = Firby::KeyCommand::BackspaceCommand.new("\177", @old_state).execute
+      end
+
+      it 'adds no characters to the line array and updates the cursor' do
+        @new_state.lines.must_equal([[]])
+        @new_state.cursor.x.must_equal(0)
+        @new_state.cursor.y.must_equal(0)
+      end
+
+      describe Firby::Screen do
+        before do
+          @output = MockIO::OutputMock.new
+          Firby::Screen.update(@old_state, @new_state, @output)
+        end
+
+        it 'updates the screen correctly' do
+          @output.output.must_equal("\e[1G\e[0K\e[1G\e[0K")
+        end
+      end
+    end
+
+    describe 'with single line that has characters' do
+      before do
+        @old_state = Firby::ReplState.new([['a']], Firby::ReplState::Cursor.new(1, 0))
+        @new_state = Firby::KeyCommand::BackspaceCommand.new("\177", @old_state).execute
+      end
+
+      it 'pops character off of last line in line array and updates the cursor' do
+        @new_state.lines.must_equal([[]])
+        @new_state.cursor.x.must_equal(0)
+        @new_state.cursor.y.must_equal(0)
+      end
+
+      describe Firby::Screen do
+        before do
+          @output = MockIO::OutputMock.new
+          Firby::Screen.update(@old_state, @new_state, @output)
+        end
+
+        it 'updates the screen correctly' do
+          @output.output.must_equal("\e[1G\e[0K\e[1G\e[0K")
+        end
+      end
+    end
+
+    describe 'with preceeding line containing no characters' do
+      before do
+        @old_state = Firby::ReplState.new([[], []], Firby::ReplState::Cursor.new(0, 1))
+        @new_state = Firby::KeyCommand::BackspaceCommand.new("\177", @old_state).execute
+      end
+
+      it 'pops last line in line array updates cursor' do
+        @new_state.lines.must_equal([[]])
+        @new_state.cursor.x.must_equal(0)
+        @new_state.cursor.y.must_equal(0)
+      end
+
+      describe Firby::Screen do
+        before do
+          @output = MockIO::OutputMock.new
+          Firby::Screen.update(@old_state, @new_state, @output)
+        end
+
+        it 'updates the screen correctly' do
+          @output.output.must_equal("\e[1G\e[0K\e[1G\e[0K")
+        end
+      end
+    end
+
+    describe 'With preceeding line containing characters' do
+      before do
+        @old_state = Firby::ReplState.new([['a'], []], Firby::ReplState::Cursor.new(0, 1))
+        @new_state = Firby::KeyCommand::BackspaceCommand.new("\177", @old_state).execute
+      end
+
+      it 'pops line off of line array and draws a cursor up and then forward' do
+        @new_state.lines.must_equal([['a']])
+        @new_state.cursor.x.must_equal(1)
+        @new_state.cursor.y.must_equal(0)
+      end
+
+      describe Firby::Screen do
+        before do
+          @output = MockIO::OutputMock.new
+          Firby::Screen.update(@old_state, @new_state, @output)
+        end
+
+        it 'updates the screen correctly' do
+          @output.output.must_equal("\e[1G\e[0K\e[1G\e[0Ka")
+        end
+      end
     end
   end
 
   describe 'Ctrl-C input' do
+    before do
+      @old_state = Firby::ReplState.new_state
+      Firby::KeyCommand::SingleKeyCommand.new("\u0003", @old_state).execute
+    end
+
     it 'must raise a SystemExit' do
       assert_raises SystemExit do
-        Firby::CtrlCCommand.new("\u0003", [], @input, @output).execute
+        Firby::KeyCommand::CtrlCCommand.new("\u0003", @old_state).execute
       end
     end
   end
 end
 
 module MockIO
-  class InputMock
-    attr_reader :input
-
-    def initialize
-      @input = []
-    end
-  end
-
   class OutputMock
     attr_reader :output
 
@@ -123,7 +201,9 @@ module MockIO
     end
 
     def syswrite(string)
-      @output = "#{@ouput.to_s}#{string}"
+      old_output = @output.dup
+      @output = "#{old_output.to_s}#{string.to_s}"
+      @output
     end
   end
 end

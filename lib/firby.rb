@@ -2,12 +2,11 @@
 # encoding: UTF-8
 
 require 'io/console'
-# --TODO: Get backspace working
 
 module Firby
   class Repl
     def self.start(input, output)
-      firby = self.new(input, output)
+      new(input, output)
     end
 
     def initialize(input, output)
@@ -88,7 +87,7 @@ class KeyCommand
   end
 
   def self.char_code
-    /.*/
+    /^.*$/
   end
 
   def initialize(character, lines, input, output)
@@ -110,14 +109,32 @@ class TabCommand < KeyCommand
 end
 
 class BackspaceCommand < KeyCommand
-  def self.match?(_character)
-    false
+  def self.char_code
+    /^\177$/
+  end
+
+  def execute
+    current_line = lines[-1].dup
+    removed = current_line.pop
+    if removed
+      lines[-1] = current_line
+      output.syswrite("#{Cursor.back(1)}#{Cursor.clear(0)}")
+    elsif lines.length > 1
+      lines.pop
+      current_line = lines[-1]
+      if current_line.length >= 1
+        output.syswrite("#{Cursor.up(1)}#{Cursor.forward(lines[-1].length)}")
+      else
+        output.syswrite("#{Cursor.up(1)}")
+      end
+    end
+    lines
   end
 end
 
 class EnterCommand < KeyCommand
   def self.char_code
-    /\r/
+    /^\r$/
   end
 
   def execute
@@ -150,7 +167,7 @@ end
 
 class CtrlCCommand < KeyCommand
   def self.char_code
-    /\u0003/
+    /^\u0003$/
   end
 
   def execute
@@ -159,7 +176,19 @@ class CtrlCCommand < KeyCommand
 end
 
 class Cursor
+  def self.forward(n)
+    "\e[#{n}C"
+  end
+
   def self.back(n)
     "\e[#{n}D"
+  end
+
+  def self.up(n)
+    "\e[#{n}A"
+  end
+
+  def self.clear(n)
+    "\e[#{n}K"
   end
 end

@@ -5,7 +5,7 @@ require 'minitest/autorun'
 require_relative '../lib/firby'
 require 'pry'
 
-describe 'Key Commands' do
+describe Firby do
   before do
     @input = MockIO::InputMock.new
     @output = MockIO::OutputMock.new
@@ -37,6 +37,47 @@ describe 'Key Commands' do
         new_lines.must_equal([['a', 'b', 'c'], []])
         @output.output.must_equal("\n#{Cursor.back(3)}")
       end
+    end
+  end
+
+  describe 'Backspace input' do
+
+    describe 'With single line' do
+      it 'pops character off of last line in line array and draws a cursor back 1 with a clear' do
+        lines = [['a']]
+        new_lines = BackspaceCommand.new("\177", lines, @input, @output).execute
+        new_lines.must_equal([[]])
+        @output.output.must_equal("#{Cursor.back(1)}#{Cursor.clear(0)}")
+      end
+    end
+
+    describe 'With no preceeding lines' do
+      it 'adds no characters to the line array and draws a cursor back 0 with a clear' do
+        lines = [[]]
+        new_lines = BackspaceCommand.new("\177", lines, @input, @ouput).execute
+        new_lines.must_equal([[]])
+        @output.output.must_equal("")
+      end
+    end
+
+    describe 'With preceeding line containing no characters' do
+      it 'pops line off of line array and draws a cursor up' do
+        lines = [[], []]
+        puts @output.class
+        new_lines = BackspaceCommand.new("\177", lines, @input, @output).execute
+        new_lines.must_equal([[]])
+        @output.output.must_equal("#{Cursor.up(1)}")
+      end
+    end
+  end
+
+  describe 'With preceeding line containing characters' do
+    it 'pops line off of line array and draws a cursor up and then forward' do
+      lines = [['a'], []]
+      puts @output.class
+      new_lines = BackspaceCommand.new("\177", lines, @input, @output).execute
+      new_lines.must_equal([['a']])
+      @output.output.must_equal("#{Cursor.up(1)}#{Cursor.forward(1)}")
     end
   end
 

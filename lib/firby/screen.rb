@@ -27,15 +27,16 @@ module Firby
       end
 
       def erase_screen(state, output)
-        output.syswrite("#{Cursor.horizontal_absolute(1)}#{Cursor.clear(0)}")
-        (state.lines.length - 1).times do |_i|
+        unless state.blank?
+          output.syswrite("#{Cursor.horizontal_absolute(1)}#{Cursor.clear(0)}")
+        end
+        (state.lines.length - 1).times do
           output.syswrite("#{Cursor.previous_line(1)}#{Cursor.clear(0)}")
         end
-        output.syswrite("#{Cursor.horizontal_absolute(1)}#{Cursor.clear(0)}")
       end
 
       def draw_screen(state, output)
-        output.syswrite(Renderer.new(state.cursor, state.lines).render)
+        output.syswrite(Renderer.new(state).render)
       end
 
       class Cursor
@@ -77,12 +78,10 @@ module Firby
       end
 
       class Renderer
-        attr_reader :cursor
-        attr_reader :lines
+        attr_reader :state
 
-        def initialize(cursor, lines)
-          @cursor = cursor
-          @lines = lines
+        def initialize(state)
+          @state = state
         end
 
         def render
@@ -91,17 +90,13 @@ module Firby
 
         private
 
-        def deltas
-          @deltas ||= Firby::Indent.new(lines.map(&:join)).indent_lines
-        end
-
         def indents
-          @indents ||= deltas.map { |d| '  ' * d }
+          @indents ||= state.deltas.map { |d| '  ' * d }
         end
 
         def formatted_lines
           indents
-            .zip(lines.map(&:join))
+            .zip(state.lines.map(&:join))
             .map(&:join)
             .join("\n#{Cursor.horizontal_absolute(1)}")
         end

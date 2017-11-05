@@ -15,7 +15,7 @@ module Firby
 
     def initialize(input, output)
       with_raw_io(input, output) do |i, o|
-        repl(ReplState.new_state, i, o)
+        repl(ReplState.blank, i, o)
       end
     end
 
@@ -36,11 +36,19 @@ module Firby
       end
     end
 
+    def log(str, state)
+      log_file = File.new('log.txt', 'a')
+      log_file.puts("#{str} #{state.cursor.x},#{state.cursor.y} #{state.lines.members.map(&:members)}}")
+      log_file.close
+    end
+
     def read_and_dispatch_key(state, input, output)
       char = get_char_from_key(input)
+      log('BEFORE: ', state)
       new_state = KeyCommand.build(char.dup, state.clone).execute
+      log('AFTER: ', new_state)
       Screen.update(state, new_state, output)
-      new_state
+      new_state.clean
     end
 
     def get_char_from_key(input)

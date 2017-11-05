@@ -60,14 +60,17 @@ module Firby
       end
 
       def execute
-        removed = state.lines[-1].pop
-        if removed
-          state.cursor = state.cursor.left(1)
-        elsif state.lines.length > 1
-          state.lines.pop
-          state.cursor = state.cursor.up.right(state.lines[-1].length)
+        state.transition do |new_state|
+          unless state.blank?
+            if state.cursor.x > 0
+              new_state.cursor = state.cursor.left(1)
+              new_state.lines[-1] = state.lines[-1].remove
+            elsif state.cursor.x == 0 && state.cursor.y > 0
+              new_state.cursor = state.cursor.up.right(state.lines[-2].length)
+              new_state.lines = state.lines.remove
+            end
+          end
         end
-        state
       end
     end
 
@@ -77,10 +80,10 @@ module Firby
       end
 
       def execute
-        current_line = state.lines[-1].dup
-        state.lines.push([])
-        state.cursor = state.cursor.down.left(current_line.length)
-        state
+        state.transition do |new_state|
+          new_state.lines = state.lines.add(Firby::Line.blank)
+          new_state.cursor = state.cursor.down.left(state.lines[-1].length)
+        end
       end
     end
 
@@ -97,11 +100,10 @@ module Firby
       end
 
       def execute
-        current_line = state.lines[-1].dup
-        current_line << character
-        state.lines[-1] = current_line
-        state.cursor = state.cursor.right(1)
-        state
+        state.transition do |new_state|
+          new_state.lines[-1] = state.lines[-1].add(character)
+          new_state.cursor = state.cursor.right(1)
+        end
       end
     end
 

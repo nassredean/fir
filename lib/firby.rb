@@ -6,7 +6,6 @@ require_relative 'firby/indent.rb'
 require_relative 'firby/key_command.rb'
 require_relative 'firby/screen.rb'
 require_relative 'firby/repl_state.rb'
-require 'pry'
 
 module Firby
   class Repl

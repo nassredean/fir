@@ -3,7 +3,6 @@
 
 require 'minitest/autorun'
 require_relative '../lib/firby/indent'
-require 'pry'
 
 describe Firby::Indent do
 
@@ -96,5 +95,12 @@ describe Firby::Indent do
     deltas = indenter.indent_lines
     deltas.length.must_equal(2)
     deltas.must_equal([0, 0])
+  end
+
+  it 'indents a class statement' do
+    indenter = Firby::Indent.new(['class Animal', 'def cow', 'if true', 'end', 'end', 'end'])
+    deltas = indenter.indent_lines
+    deltas.length.must_equal(6)
+    deltas.must_equal([0, 1, 2, 2, 1, 0])
   end
 end

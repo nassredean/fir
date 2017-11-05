@@ -37,8 +37,8 @@ module Firby
     end
 
     def log(str, state)
-      log_file = File.new("log.txt", "a")
-      log_file.puts("#{str} #{state.cursor.x},#{state.cursor.y} #{state.lines.members.map { |m| m.members }}")
+      log_file = File.new('log.txt', 'a')
+      log_file.puts("#{str} #{state.cursor.x},#{state.cursor.y} #{state.lines.members.map(&:members)}}")
       log_file.close
     end
 
@@ -48,14 +48,7 @@ module Firby
       new_state = KeyCommand.build(char.dup, state.clone).execute
       log('AFTER: ', new_state)
       Screen.update(state, new_state, output)
-      # instead of having new_state.cleanse we could have KeyCommand.build take an optional block and then this code
-      # would look something like this:
-      # KeyCommand.build(char.dup, state.clone).execute do |new_state|
-      #   Screen.update(state, new_state, output)
-      # end
-      # and that would return a "cleansed" new_state, which might not need to be a public method anymore
-      #new_state.cleanse
-      new_state.cleanse
+      new_state.clean
     end
 
     def get_char_from_key(input)

@@ -3,7 +3,6 @@
 
 require 'minitest/autorun'
 require_relative '../lib/firby'
-require 'pry'
 
 describe Firby do
   describe Firby::KeyCommand::SingleKeyCommand do
@@ -56,7 +55,7 @@ describe Firby do
 
       it 'adds no characters to the line array and the cursor remains at origin' do
         @new_state.lines.must_equal(Firby::Lines.blank)
-        @new_state.cursor.must_equal(Firby::Cursor.origin)
+        @new_state.cursor.must_equal(Firby::Cursor.blank)
         @old_state.must_equal(Firby::ReplState.blank)
       end
     end
@@ -69,7 +68,7 @@ describe Firby do
 
       it 'pops character off of last line in line array and updates the cursor' do
         @new_state.lines.must_equal(Firby::Lines.blank)
-        @new_state.cursor.must_equal(Firby::Cursor.origin)
+        @new_state.cursor.must_equal(Firby::Cursor.blank)
         @old_state.must_equal(Firby::ReplState.new(Firby::Lines.new(Firby::Line.new('a')), Firby::Cursor.new(1, 0)))
       end
     end
@@ -82,7 +81,7 @@ describe Firby do
 
       it 'pops last line in line array and updates cursor' do
         @new_state.lines.must_equal(Firby::Lines.blank)
-        @new_state.cursor.must_equal(Firby::Cursor.origin)
+        @new_state.cursor.must_equal(Firby::Cursor.blank)
         @old_state.must_equal(Firby::ReplState.new(Firby::Lines.new(Firby::Line.blank, Firby::Line.blank), Firby::Cursor.new(0, 1)))
       end
     end

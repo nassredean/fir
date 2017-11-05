@@ -9,6 +9,10 @@ module Firby
       new
     end
 
+    def self.build(members)
+      new(*members)
+    end
+
     attr_reader :members
 
     def initialize(*members)
@@ -35,8 +39,8 @@ module Firby
       @members.length
     end
 
-    def ==(b)
-      b.members == members
+    def ==(other)
+      other.members == members
     end
 
     def blank?

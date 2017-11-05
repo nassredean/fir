@@ -13,6 +13,13 @@ describe Firby::Collection do
     end
   end
 
+  describe 'self.build' do
+    it 'creates a new collection with members set to array' do
+      @collection = Firby::Collection.build([])
+      @collection.members.must_equal([])
+    end
+  end
+
   describe 'initialization' do
     it 'sets members instance variable correctly with no arguments' do
       @collection = Firby::Collection.new

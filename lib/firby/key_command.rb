@@ -62,10 +62,10 @@ module Firby
       def execute
         state.transition do |new_state|
           unless state.blank?
-            if state.cursor.x > 0
+            if state.cursor.x.positive?
               new_state.cursor = state.cursor.left(1)
               new_state.lines[-1] = state.lines[-1].remove
-            elsif state.cursor.x == 0 && state.cursor.y > 0
+            elsif state.cursor.x.zero? && state.cursor.y.positive?
               new_state.cursor = state.cursor.up.right(state.lines[-2].length)
               new_state.lines = state.lines.remove
             end

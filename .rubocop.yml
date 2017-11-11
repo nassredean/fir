@@ -5,3 +5,8 @@ Style/Documentation:
   Description: >-
                  Checks for missing top-level documentation of classes and modules.
   Enabled: false
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude: 
+    - test/**/*

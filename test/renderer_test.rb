@@ -2,14 +2,15 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../lib/firby/repl_state'
 require_relative '../lib/firby/screen'
+require_relative './state_helper'
 
-describe Firby::Screen::Screen::Renderer do
+describe Firby::Screen::Renderer do
   describe '#render' do
     before do
-      @state = Firby::ReplState.build([['d', 'e', 'f', ' ', 'c', 'o', 'w'], []], [0, 1])
-      @renderer = Firby::Screen::Screen::Renderer.new(@state)
+      @state = StateHelper.build([['d', 'e', 'f', ' ', 'c', 'o', 'w'], []],
+                                 [0, 1])
+      @renderer = Firby::Screen::Renderer.new(@state)
     end
 
     it 'renders correctly' do

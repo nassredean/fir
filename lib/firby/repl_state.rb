@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-require_relative 'lines.rb'
-require_relative 'cursor.rb'
-require_relative 'indent.rb'
-require_relative 'collection.rb'
+require_relative 'lines'
+require_relative 'cursor'
+require_relative 'indent'
 
 module Firby
-  class ReplState < Collection
+  class ReplState
     attr_accessor :lines
     attr_accessor :cursor
     attr_reader :deltas
@@ -16,22 +15,18 @@ module Firby
       new(Lines.blank, Cursor.blank)
     end
 
-    def self.build(lines, cursor)
-      new(Lines.build(lines), Cursor.build(cursor))
-    end
-
     def initialize(lines, cursor)
       @lines = lines
       @cursor = cursor
-      @members = [lines, cursor]
       set_indent
     end
 
-    def transition
-      b = clone
-      yield b
-      b.set_indent
-      b
+    def transition(command)
+      new_state = command.execute
+      new_state.set_indent
+      yield new_state if block_given?
+      return blank if new_state.block?
+      new_state
     end
 
     def clone
@@ -42,13 +37,8 @@ module Firby
       self.class.new(Lines.blank, Cursor.blank)
     end
 
-    def clean
-      return blank if block?
-      self
-    end
-
     def blank?
-      @members.all?(&:blank?)
+      lines.blank? && cursor.blank?
     end
 
     def block?
@@ -56,7 +46,7 @@ module Firby
     end
 
     def ==(other)
-      members == other.members
+      lines == other.lines && cursor == other.cursor
     end
 
     protected
@@ -68,7 +58,7 @@ module Firby
     private
 
     def compute_indent
-      Firby::Indent.new(lines.map(&:join)).indent_lines
+      Firby::Indent.new(lines.map(&:join)).generate
     end
   end
 end

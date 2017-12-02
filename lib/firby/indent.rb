@@ -2,7 +2,6 @@
 # encoding: UTF-8
 
 require 'ripper'
-require 'pry'
 
 module Firby
   class Indent

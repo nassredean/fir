@@ -2,103 +2,181 @@
 # encoding: UTF-8
 
 require 'ripper'
+require 'pry'
 
 module Firby
   class Indent
     attr_reader :lines
-
-    SPACES = '  '
-
-    OPEN_TOKENS = {
-      'def'    => 'end',
-      'class'  => 'end',
-      'module' => 'end',
-      'do'     => 'end',
-      'if'     => 'end',
-      'unless' => 'end',
-      'while'  => 'end',
-      'until'  => 'end',
-      'for'    => 'end',
-      'case'   => 'end',
-      'begin'  => 'end',
-      '['      => ']',
-      '{'      => '}',
-      '('      => ')'
-    }.freeze
-
-    SINGLELINE_TOKENS = %w[if while until unless rescue].freeze
-    MIDWAY_TOKENS = %w[when else elsif ensure rescue].freeze
-    OPTIONAL_DO_TOKENS = %w[for while until].freeze
+    attr_reader :stack
+    attr_reader :delimiter_stack
+    attr_reader :array_stack
+    attr_reader :paren_stack
 
     def initialize(lines)
       @lines = lines
+      @stack = []
+      @delimiter_stack = []
+      @array_stack = []
+      @paren_stack = []
     end
 
-    def indent_lines
-      string_delimiter = nil
-      indentation_deltas = []
-      indentation_delta = 0
-      token_stack = []
-      lines.each do |line|
-        if string_delimiter
-          # push the open delimeter onto the line for tokenization
-          tokens = Ripper.lex("#{string_delimiter}\n#{line}")
-          # remove the open delimeter token
-          tokens = tokens[1..-1]
-        else
-          tokens = Ripper.lex(line)
-        end
-        indentation_deltas << indentation_delta
-        seen_for_at = []
-        tokens.each do |(_, column), type, token|
-          is_optional_do = (token == 'do' &&
-                            seen_for_at.include?(indentation_delta - 1))
-          seen_for_at << indentation_delta if OPTIONAL_DO_TOKENS.include?(token)
-          next if single_line_token?(token, column)
-          if string_begining?(type)
-            string_delimiter = token
-          elsif string_end?(type)
-            string_delimiter = nil
-          elsif open_token?(token, column) && !is_optional_do
-            token_stack << token
-            indentation_delta += 1
-          elsif closing_token?(token_stack, token)
-            token_stack.pop
-            indentation_delta -= indentation_delta - 1
-            indentation_deltas[-1] = indentation_deltas[-1] - 1
-          elsif midway_token?(token)
-            indentation_deltas[-1] = indentation_deltas[-1] - 1
+    OPEN_TOKENS = %w[if while for until unless def class module begin].freeze
+    OPTIONAL_DO_TOKENS = %w[for while until].freeze
+    WHEN_MIDWAY_TOKEN = %w[else when].freeze
+    IF_MIDWAY_TOKEN = %w[else elsif].freeze
+    BEGIN_MIDWAY_TOKEN = %w[rescue ensure else].freeze
+    BEGIN_IMPLICIT_TOKEN = %w[rescue ensure].freeze
+
+    def generate
+      lines.each.with_index.with_object([]) do |(line, line_index), deltas|
+        delta = stack.length
+        delta += array_stack.length if in_array?
+        delta += paren_stack.length if in_paren?
+        line.split(' ').each_with_index do |word, word_index|
+          token = construct_token(word, word_index, line_index)
+          if any_open?(token)
+            stack.push(token)
+          elsif any_midway?(token)
+            delta -= 1
+          elsif any_close?(token)
+            delta -= 1
+            stack.pop
+          elsif string_open_token?(token)
+            delimiter_stack.push(token)
+          elsif string_close_token?(token)
+            delimiter_stack.pop
+          elsif open_array_token?(token)
+            array_stack.push(token)
+          elsif close_array_token?(token)
+            delta -= 1 if array_stack.last.position.y != token.position.y
+            array_stack.pop
+          elsif open_paren_token?(token)
+            paren_stack.push(token)
+          elsif close_paren_token?(token)
+            delta -= 1 if paren_stack.last.position.y != token.position.y
+            paren_stack.pop
           end
         end
+        deltas << delta
       end
-      indentation_deltas
     end
 
     private
 
-    def single_line_token?(token, column)
-      SINGLELINE_TOKENS.include?(token) && (column != 0)
+    def construct_token(word, word_index, line_index)
+      position = Position.new(word_index, line_index)
+      Token.new(word, position)
     end
 
-    def string_begining?(type)
-      type == :on_tstring_beg
+    def any_open?(token)
+      !in_string? &&
+        open_token?(token) ||
+        when_open_token?(token) ||
+        unmatched_do_token?(token)
     end
 
-    def string_end?(type)
-      type == :on_tstring_end
+    def any_midway?(token)
+      !in_string? &&
+        if_midway_token?(token) ||
+        begin_midway_token?(token) ||
+        when_midway_token?(token)
     end
 
-    def open_token?(token, column)
-      OPEN_TOKENS.keys.include?(token) &&
-        !single_line_token?(token, column)
+    def any_close?(token)
+      !in_string? &&
+        closing_token?(token) ||
+        when_close_token?(token)
     end
 
-    def closing_token?(stack, token)
-      token == OPEN_TOKENS[stack.last]
+    def string_open_token?(token)
+      (token.word[0] == '\'' || token.word[0] == '"') &&
+        !((token.word.length > 1) && token.word[-1] == token.word[0]) &&
+        !in_string?
     end
 
-    def midway_token?(token)
-      MIDWAY_TOKENS.include?(token)
+    def string_close_token?(token)
+      in_string? &&
+        ((token.word[-1] == delimiter_stack.last.word[0]) && (token.word[-2] != "\\"))
     end
+
+    def open_array_token?(token)
+      !in_string? &&
+        token.word[0] == '['
+    end
+
+    def close_array_token?(token)
+      !in_string? &&
+        in_array? &&
+        token.word[-1] == ']'
+    end
+
+    def open_paren_token?(token)
+      !in_string? &&
+        token.word[0] == '{'
+    end
+
+    def close_paren_token?(token)
+      !in_string? &&
+        in_paren? &&
+        token.word[-1] == '}'
+    end
+
+    def in_array?
+      array_stack.length.positive?
+    end
+
+    def in_string?
+      delimiter_stack.length.positive?
+    end
+
+    def in_paren?
+      paren_stack.length.positive?
+    end
+
+    def open_token?(token)
+      OPEN_TOKENS.include?(token.word) && token.position.x.zero?
+    end
+
+    def closing_token?(token)
+      token.word == 'end' && stack.last && token.position.x.zero?
+    end
+
+    def unmatched_do_token?(token)
+      return false unless token.word == 'do'
+      !(OPTIONAL_DO_TOKENS.include?(stack.last&.word) &&
+        (token.position.y == stack.last&.position&.y))
+    end
+
+    def when_open_token?(token)
+      return false unless token.word == 'when' && token.position.x.zero?
+      stack.last&.word != 'when'
+    end
+
+    def when_midway_token?(token)
+      return false unless WHEN_MIDWAY_TOKEN.include?(token.word) && token.position.x.zero?
+      return false unless stack.last&.word == 'when'
+      true
+    end
+
+    def when_close_token?(token)
+      return false unless token.word == 'end' && token.position.x.zero?
+      return false unless stack.last&.word == 'when'
+      true
+    end
+
+    def if_midway_token?(token)
+      return false unless IF_MIDWAY_TOKEN.include?(token.word) && token.position.x.zero?
+      return false unless stack.last&.word == 'if'
+      true
+    end
+
+    def begin_midway_token?(token)
+      return false unless token.position.x.zero? && stack.last
+      (BEGIN_MIDWAY_TOKEN.include?(token.word) && stack.last.word == 'begin') ||
+        BEGIN_IMPLICIT_TOKEN.include?(token.word)
+    end
+
+    Token = Struct.new(:word, :position)
+    Position = Struct.new(:x, :y)
   end
 end

@@ -1,2 +1,2 @@
 *.gem
-log.txt
+run_all_tests.rb

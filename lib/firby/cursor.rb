@@ -1,25 +1,18 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-require_relative 'collection.rb'
-
 module Firby
-  class Cursor < Collection
-    def self.blank
-      new(0, 0)
-    end
-
-    def self.build(members)
-      new(members[0], members[1])
-    end
-
+  class Cursor
     attr_reader :x
     attr_reader :y
 
     def initialize(x, y)
       @x = x
       @y = y
-      @members = [x, y]
+    end
+
+    def self.blank
+      new(0, 0)
     end
 
     def clone

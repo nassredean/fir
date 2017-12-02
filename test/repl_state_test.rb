@@ -2,9 +2,46 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../lib/firby/repl_state.rb'
-require_relative '../lib/firby/lines.rb'
-require_relative '../lib/firby/cursor.rb'
+require_relative '../lib/firby/repl_state'
+require_relative '../lib/firby/lines'
+require_relative '../lib/firby/cursor'
+require_relative './state_helper'
+require_relative './key_command/key_command_interface_test'
+
+class CommandDouble
+  attr_reader :state
+  attr_reader :character
+
+  def initialize(state)
+    @state = state
+    @character = 'r'
+  end
+
+  def self.match?
+    true
+  end
+
+  def self.char_code
+    /.*/
+  end
+
+  def execute
+    execute_hook(@state)
+  end
+
+  def execute_hook(state)
+    state
+  end
+end
+
+describe CommandDouble do
+  include KeyCommandInterfaceTest
+  include KeyCommandSubclassTest
+
+  before do
+    @command = CommandDouble.new(@state)
+  end
+end
 
 describe Firby::ReplState do
   describe 'self.blank' do
@@ -18,7 +55,7 @@ describe Firby::ReplState do
 
   describe 'self.build' do
     it 'builds lines and cursor from array arguments' do
-      @collection = Firby::ReplState.build([[]], [0, 0])
+      @collection = StateHelper.build([[]], [0, 0])
       @collection.lines.must_equal(Firby::Lines.blank)
       @collection.cursor.must_equal(Firby::Cursor.blank)
     end
@@ -32,7 +69,8 @@ describe Firby::ReplState do
     end
 
     it 'sets members instance variable correctly with arguments' do
-      @collection = Firby::ReplState.new(Firby::Lines.blank, Firby::Cursor.blank)
+      @collection = Firby::ReplState.new(Firby::Lines.blank,
+                                         Firby::Cursor.blank)
       @collection.lines.must_equal(Firby::Lines.blank)
       @collection.cursor.must_equal(Firby::Cursor.blank)
       @collection.deltas.must_equal([0])
@@ -61,21 +99,10 @@ describe Firby::ReplState do
 
   describe 'clean' do
     it 'returns a blank state if the original state is a block' do
-      @collection = Firby::ReplState.build([['d', 'e', 'f', ' ', 'c', 'o', 'w'], ['e', 'n', 'd']], [3, 1])
-      @new_collection = @collection.clean
-      @new_collection.must_equal(Firby::ReplState.blank)
-      @new_collection.object_id.wont_equal(@collection.object_id)
-    end
-  end
-
-  describe 'transition' do
-    it 'returns a new state without modifiying the original' do
-      @collection = Firby::ReplState.blank
-      @new_collection = @collection.transition do |new_state|
-        new_state.lines = Firby::Lines.build([['a']])
-      end
-      @new_collection.lines.must_equal(Firby::Lines.build([['a']]))
-      @new_collection.object_id.wont_equal(@collection.object_id)
+      @state = StateHelper.build([%w[d e f c o w], %w[e n d]], [3, 1])
+      @command = CommandDouble.new(@state)
+      @new_state = @state.transition(@command)
+      @new_state.must_equal(Firby::ReplState.blank)
     end
   end
 
@@ -87,10 +114,11 @@ describe Firby::ReplState do
   end
 
   describe 'block?' do
-    it 'returns true when there is one or more lines that form indent deltas where the last element is 0' do
+    it 'returns true when indents indicate an executable chunk of code' do
       @collection = Firby::ReplState.blank
       @collection.block?.must_equal(false)
-      @another_collection = Firby::ReplState.build([['d', 'e', 'f', ' ', 'c', 'o', 'w'], ['e', 'n', 'd']], [3, 1])
+      @another_collection = StateHelper.build([%w[d e f c o w], %w[e n d]],
+                                              [3, 1])
       @another_collection.block?.must_equal(true)
     end
   end

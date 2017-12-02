@@ -2,13 +2,13 @@
 # encoding: UTF-8
 
 require 'io/console'
-require_relative 'firby/indent'
-require_relative 'firby/key_command/key_command'
-require_relative 'firby/screen'
-require_relative 'firby/repl_state'
-require_relative 'firby/key'
+require_relative 'fir/indent'
+require_relative 'fir/key_command/key_command'
+require_relative 'fir/screen'
+require_relative 'fir/repl_state'
+require_relative 'fir/key'
 
-module Firby
+module Fir
   class Repl
     def self.start(input, output)
       new(Key.new(input), Screen.new(output))

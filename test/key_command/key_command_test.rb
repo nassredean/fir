@@ -2,28 +2,28 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../../lib/firby/key_command/key_command'
-require_relative '../../lib/firby/repl_state'
+require_relative '../../lib/fir/key_command/key_command'
+require_relative '../../lib/fir/repl_state'
 
-describe Firby::KeyCommand do
+describe Fir::KeyCommand do
   describe 'self.build' do
     it 'instantiates the correct command' do
-      Firby::KeyCommand
-        .build("\177", Firby::ReplState.blank)
+      Fir::KeyCommand
+        .build("\177", Fir::ReplState.blank)
         .class
-        .must_equal(Firby::KeyCommand::BackspaceCommand)
-      Firby::KeyCommand
-        .build("\u0003", Firby::ReplState.blank)
+        .must_equal(Fir::KeyCommand::BackspaceCommand)
+      Fir::KeyCommand
+        .build("\u0003", Fir::ReplState.blank)
         .class
-        .must_equal(Firby::KeyCommand::CtrlCCommand)
-      Firby::KeyCommand
-        .build("\r", Firby::ReplState.blank)
+        .must_equal(Fir::KeyCommand::CtrlCCommand)
+      Fir::KeyCommand
+        .build("\r", Fir::ReplState.blank)
         .class
-        .must_equal(Firby::KeyCommand::EnterCommand)
-      Firby::KeyCommand
-        .build('c', Firby::ReplState.blank)
+        .must_equal(Fir::KeyCommand::EnterCommand)
+      Fir::KeyCommand
+        .build('c', Fir::ReplState.blank)
         .class
-        .must_equal(Firby::KeyCommand::SingleKeyCommand)
+        .must_equal(Fir::KeyCommand::SingleKeyCommand)
     end
   end
 end

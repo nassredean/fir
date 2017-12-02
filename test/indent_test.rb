@@ -2,9 +2,9 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../lib/firby/indent'
+require_relative '../lib/fir/indent'
 
-describe Firby::Indent do
+describe Fir::Indent do
   describe 'class statement' do
     it 'indents correctly' do
       indent_helper(
@@ -32,7 +32,7 @@ describe Firby::Indent do
 
   describe 'module statement' do
     it 'indents correctly' do
-      Firby::Indent
+      Fir::Indent
         .new(['module Cow', 'def cow', 'puts "moo"', 'end', 'end', ''])
         .generate
         .must_equal([0, 1, 2, 1, 0, 0])
@@ -52,15 +52,15 @@ describe Firby::Indent do
 
   describe 'def statement' do
     it 'indents correctly' do
-      Firby::Indent
+      Fir::Indent
         .new(['def cow(y)', 'puts "moo"', 'end'])
         .generate
         .must_equal([0, 1, 0])
-      Firby::Indent
+      Fir::Indent
         .new(['def cow(y)', 'x="cow"', 'puts x', 'end'])
         .generate
         .must_equal([0, 1, 1, 0])
-      Firby::Indent
+      Fir::Indent
         .new(['def animal(y)', 'def dog', 'puts x', 'end', 'end', ''])
         .generate
         .must_equal([0, 1, 2, 1, 0, 0])
@@ -71,51 +71,51 @@ describe Firby::Indent do
     %w[for while until].each do |token|
       describe "#{token} statement" do
         it 'indents correctly' do
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1 do", ''])
             .generate
             .must_equal([0, 1])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1 do", 'puts "cow"'])
             .generate
             .must_equal([0, 1])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1 do", 'end'])
             .generate
             .must_equal([0, 0])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1 do", 'puts "cow"', 'end'])
             .generate
             .must_equal([0, 1, 0])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1 do", 'puts "cow"', 'puts "cow"', 'end'])
             .generate
             .must_equal([0, 1, 1, 0])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1", ''])
             .generate
             .must_equal([0, 1])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1", 'puts "cow"'])
             .generate
             .must_equal([0, 1])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1", 'end'])
             .generate
             .must_equal([0, 0])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1", 'puts "cow"', 'end'])
             .generate
             .must_equal([0, 1, 0])
-          Firby::Indent
+          Fir::Indent
             .new(["#{token} x == 1", 'puts "cow"', 'puts "cow"', 'end'])
             .generate
             .must_equal([0, 1, 1, 0])
-          Firby::Indent
+          Fir::Indent
             .new(["puts 'cow' #{token} true"])
             .generate
             .must_equal([0])
-          Firby::Indent
+          Fir::Indent
             .new(["puts 'cow' #{token} true", ''])
             .generate
             .must_equal([0, 0])
@@ -472,5 +472,5 @@ describe Firby::Indent do
 end
 
 def indent_helper(code)
-  Firby::Indent.new(code.split("\n").push('')).generate
+  Fir::Indent.new(code.split("\n").push('')).generate
 end

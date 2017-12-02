@@ -6,7 +6,7 @@ require_relative './ctrl_c_command'
 require_relative './enter_command'
 require_relative './single_key_command'
 
-module Firby
+module Fir
   module KeyCommand
     class << self
       def build(character, state)

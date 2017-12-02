@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-module Firby
+module Fir
   class Lines
     include Enumerable
     attr_reader :members

@@ -2,9 +2,9 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../lib/firby/repl_state'
-require_relative '../lib/firby/lines'
-require_relative '../lib/firby/cursor'
+require_relative '../lib/fir/repl_state'
+require_relative '../lib/fir/lines'
+require_relative '../lib/fir/cursor'
 require_relative './state_helper'
 require_relative './key_command/key_command_interface_test'
 
@@ -43,12 +43,12 @@ describe CommandDouble do
   end
 end
 
-describe Firby::ReplState do
+describe Fir::ReplState do
   describe 'self.blank' do
     it 'creates a blank collection' do
-      @collection = Firby::ReplState.blank
-      @collection.lines.must_equal(Firby::Lines.blank)
-      @collection.cursor.must_equal(Firby::Cursor.blank)
+      @collection = Fir::ReplState.blank
+      @collection.lines.must_equal(Fir::Lines.blank)
+      @collection.cursor.must_equal(Fir::Cursor.blank)
       @collection.blank?.must_equal(true)
     end
   end
@@ -56,30 +56,30 @@ describe Firby::ReplState do
   describe 'self.build' do
     it 'builds lines and cursor from array arguments' do
       @collection = StateHelper.build([[]], [0, 0])
-      @collection.lines.must_equal(Firby::Lines.blank)
-      @collection.cursor.must_equal(Firby::Cursor.blank)
+      @collection.lines.must_equal(Fir::Lines.blank)
+      @collection.cursor.must_equal(Fir::Cursor.blank)
     end
   end
 
   describe 'initialization' do
     it 'raises error with no arguments' do
       assert_raises ArgumentError do
-        @collection = Firby::ReplState.new
+        @collection = Fir::ReplState.new
       end
     end
 
     it 'sets members instance variable correctly with arguments' do
-      @collection = Firby::ReplState.new(Firby::Lines.blank,
-                                         Firby::Cursor.blank)
-      @collection.lines.must_equal(Firby::Lines.blank)
-      @collection.cursor.must_equal(Firby::Cursor.blank)
+      @collection = Fir::ReplState.new(Fir::Lines.blank,
+                                         Fir::Cursor.blank)
+      @collection.lines.must_equal(Fir::Lines.blank)
+      @collection.cursor.must_equal(Fir::Cursor.blank)
       @collection.deltas.must_equal([0])
     end
   end
 
   describe 'clone' do
     it 'clones the cursor and lines' do
-      @collection = Firby::ReplState.blank
+      @collection = Fir::ReplState.blank
       @new_collection = @collection.clone
       @new_collection.lines.must_equal(@collection.lines)
       @new_collection.cursor.must_equal(@collection.cursor)
@@ -89,10 +89,10 @@ describe Firby::ReplState do
 
   describe 'blank' do
     it 'creates a new state with blank lines and a blank cursor' do
-      @collection = Firby::ReplState.blank
+      @collection = Fir::ReplState.blank
       @new_collection = @collection.blank
-      @new_collection.lines.must_equal(Firby::Lines.blank)
-      @new_collection.cursor.must_equal(Firby::Cursor.blank)
+      @new_collection.lines.must_equal(Fir::Lines.blank)
+      @new_collection.cursor.must_equal(Fir::Cursor.blank)
       @new_collection.object_id.wont_equal(@collection.object_id)
     end
   end
@@ -102,20 +102,20 @@ describe Firby::ReplState do
       @state = StateHelper.build([%w[d e f c o w], %w[e n d]], [3, 1])
       @command = CommandDouble.new(@state)
       @new_state = @state.transition(@command)
-      @new_state.must_equal(Firby::ReplState.blank)
+      @new_state.must_equal(Fir::ReplState.blank)
     end
   end
 
   describe 'blank?' do
     it 'returns true when the state has a blank cursor and lines' do
-      @collection = Firby::ReplState.blank
+      @collection = Fir::ReplState.blank
       @collection.blank?.must_equal(true)
     end
   end
 
   describe 'block?' do
     it 'returns true when indents indicate an executable chunk of code' do
-      @collection = Firby::ReplState.blank
+      @collection = Fir::ReplState.blank
       @collection.block?.must_equal(false)
       @another_collection = StateHelper.build([%w[d e f c o w], %w[e n d]],
                                               [3, 1])
@@ -125,8 +125,8 @@ describe Firby::ReplState do
 
   describe '==' do
     it 'returns true with two equivalent states' do
-      @collection = Firby::ReplState.blank
-      @new_collection = Firby::ReplState.blank
+      @collection = Fir::ReplState.blank
+      @new_collection = Fir::ReplState.blank
       @collection.must_equal(@new_collection)
     end
   end

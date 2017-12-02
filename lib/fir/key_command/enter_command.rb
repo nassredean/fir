@@ -3,7 +3,7 @@
 
 require_relative './base_command'
 
-module Firby
+module Fir
   module KeyCommand
     class EnterCommand < BaseCommand
       def self.char_code

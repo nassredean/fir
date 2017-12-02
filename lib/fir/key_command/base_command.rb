@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-module Firby
+module Fir
   module KeyCommand
     class BaseCommand
       attr_reader :character

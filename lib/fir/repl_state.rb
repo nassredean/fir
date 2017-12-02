@@ -5,7 +5,7 @@ require_relative 'lines'
 require_relative 'cursor'
 require_relative 'indent'
 
-module Firby
+module Fir
   class ReplState
     attr_accessor :lines
     attr_accessor :cursor
@@ -58,7 +58,7 @@ module Firby
     private
 
     def compute_indent
-      Firby::Indent.new(lines.map(&:join)).generate
+      Fir::Indent.new(lines.map(&:join)).generate
     end
   end
 end

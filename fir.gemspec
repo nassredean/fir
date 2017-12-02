@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.summary       = 'A Ruby REPL inspired by the Fish shell'
   s.description   = s.summary
   s.authors       = ['Nassredean Nasseri']
-  s.email         = 'dnasseri10@gmail.com'
+  s.email         = 'dean@nasseri.io'
   s.files         = ['lib/fir.rb']
   s.executables   = ['fir']
   s.require_paths = ['lib']

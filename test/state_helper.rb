@@ -2,14 +2,14 @@
 # encoding: UTF-8
 
 module StateHelper
-  require_relative '../lib/firby/repl_state'
-  require_relative '../lib/firby/lines'
-  require_relative '../lib/firby/cursor'
+  require_relative '../lib/fir/repl_state'
+  require_relative '../lib/fir/lines'
+  require_relative '../lib/fir/cursor'
 
   def self.build(lines, cursor)
-    Firby::ReplState.new(
-      Firby::Lines.new(*lines),
-      Firby::Cursor.new(cursor[0], cursor[1])
+    Fir::ReplState.new(
+      Fir::Lines.new(*lines),
+      Fir::Cursor.new(cursor[0], cursor[1])
     )
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-module Firby
+module Fir
   class Screen
     attr_reader :state
     attr_reader :new_state

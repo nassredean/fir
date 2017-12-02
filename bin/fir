@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-require 'firby'
-Firby::Repl.start($stdin, $stdout)
+require 'fir'
+Fir::Repl.start($stdin, $stdout)

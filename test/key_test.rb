@@ -2,7 +2,7 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../lib/firby/key'
+require_relative '../lib/fir/key'
 require_relative './key_interface_test'
 
 class InputDouble
@@ -33,27 +33,27 @@ class InputDouble
   end
 end
 
-describe Firby::Key do
+describe Fir::Key do
   describe 'interface' do
     include KeyInterfaceTest
 
     before do
-      @key = Firby::Key.new(InputDouble.new(['c']))
+      @key = Fir::Key.new(InputDouble.new(['c']))
     end
   end
 
   it 'returns the character read from the output' do
-    key = Firby::Key.new(InputDouble.new(['c']))
+    key = Fir::Key.new(InputDouble.new(['c']))
     key.get.must_equal('c')
   end
 
   it 'handles a single escape character' do
-    key = Firby::Key.new(InputDouble.new(["\e"]))
+    key = Fir::Key.new(InputDouble.new(["\e"]))
     key.get.must_equal("\e")
   end
 
   it 'handles a single escape character' do
-    key = Firby::Key.new(InputDouble.new(["\e", '[', 'C']))
+    key = Fir::Key.new(InputDouble.new(["\e", '[', 'C']))
     key.get.must_equal("\e[C")
   end
 end

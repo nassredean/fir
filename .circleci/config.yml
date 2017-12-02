@@ -9,7 +9,7 @@ jobs:
       # specify the version you desire here
        - image: circleci/ruby:2.4.1-node-browsers
 
-    working_directory: ~/firby2
+    working_directory: ~/fir
 
     steps:
       - checkout

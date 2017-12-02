@@ -2,8 +2,8 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../../lib/firby/key_command/ctrl_c_command'
-require_relative '../../lib/firby/repl_state'
+require_relative '../../lib/fir/key_command/ctrl_c_command'
+require_relative '../../lib/fir/repl_state'
 require_relative './key_command_interface_test'
 
 describe 'Ctrl-C input' do
@@ -11,8 +11,8 @@ describe 'Ctrl-C input' do
   include KeyCommandSubclassTest
 
   before do
-    @old_state = Firby::ReplState.blank
-    @command = Firby::KeyCommand::CtrlCCommand.new("\u0003", @old_state)
+    @old_state = Fir::ReplState.blank
+    @command = Fir::KeyCommand::CtrlCCommand.new("\u0003", @old_state)
   end
 
   it 'must raise a SystemExit' do

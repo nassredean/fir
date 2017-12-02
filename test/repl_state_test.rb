@@ -70,7 +70,7 @@ describe Fir::ReplState do
 
     it 'sets members instance variable correctly with arguments' do
       @collection = Fir::ReplState.new(Fir::Lines.blank,
-                                         Fir::Cursor.blank)
+                                       Fir::Cursor.blank)
       @collection.lines.must_equal(Fir::Lines.blank)
       @collection.cursor.must_equal(Fir::Cursor.blank)
       @collection.deltas.must_equal([0])

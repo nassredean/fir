@@ -175,8 +175,8 @@ describe Fir::Indent do
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["puts 'cow' #{token} true"]).generate
-          indent.indents.must_equal([0])
+          indent = Fir::Indent.new(["puts 'cow' #{token} true", '']).generate
+          indent.indents.must_equal([0, 0])
           indent.executable?.must_equal(true)
         end
 

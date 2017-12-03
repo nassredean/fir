@@ -9,7 +9,7 @@ module Fir
   class ReplState
     attr_accessor :lines
     attr_accessor :cursor
-    attr_reader :deltas
+    attr_reader :indent
 
     def self.blank
       new(Lines.blank, Cursor.blank)
@@ -25,7 +25,7 @@ module Fir
       new_state = command.execute
       new_state.set_indent
       yield new_state if block_given?
-      return blank if new_state.block?
+      return blank if new_state.executable?
       new_state
     end
 
@@ -41,18 +41,22 @@ module Fir
       lines.blank? && cursor.blank?
     end
 
-    def block?
-      deltas.length > 1 && deltas[-1].zero?
-    end
-
     def ==(other)
       lines == other.lines && cursor == other.cursor
+    end
+
+    def indents
+      indent.indents
+    end
+
+    def executable?
+      indent.executable?
     end
 
     protected
 
     def set_indent
-      @deltas = compute_indent
+      @indent = compute_indent
     end
 
     private

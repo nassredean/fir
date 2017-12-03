@@ -63,7 +63,7 @@ module Fir
       private
 
       def indents
-        @indents ||= state.deltas.map { |d| '  ' * d }
+        @indents ||= state.indents.map { |d| '  ' * d }
       end
     end
   end

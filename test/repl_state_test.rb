@@ -73,7 +73,7 @@ describe Fir::ReplState do
                                        Fir::Cursor.blank)
       @collection.lines.must_equal(Fir::Lines.blank)
       @collection.cursor.must_equal(Fir::Cursor.blank)
-      @collection.deltas.must_equal([0])
+      @collection.indents.must_equal([0])
     end
   end
 
@@ -113,13 +113,13 @@ describe Fir::ReplState do
     end
   end
 
-  describe 'block?' do
+  describe 'executable?' do
     it 'returns true when indents indicate an executable chunk of code' do
       @collection = Fir::ReplState.blank
-      @collection.block?.must_equal(false)
+      @collection.executable?.must_equal(false)
       @another_collection = StateHelper.build([%w[d e f c o w], %w[e n d]],
                                               [3, 1])
-      @another_collection.block?.must_equal(true)
+      @another_collection.executable?.must_equal(true)
     end
   end
 

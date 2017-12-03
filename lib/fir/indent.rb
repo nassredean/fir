@@ -67,7 +67,7 @@ module Fir
         end
         deltas << delta
       end
-      Indent.new(indents, executable?)
+      IndentBlock.new(indents, executable?(indents))
     end
 
     private
@@ -77,8 +77,10 @@ module Fir
       Token.new(word, position)
     end
 
-    def executable?
-      !in_block? &&
+    def executable?(indents)
+      indents.length > 1 &&
+        indents[-1].zero? &&
+        !in_block? &&
         !in_string? &&
         !in_heredoc? &&
         !in_paren? &&
@@ -220,6 +222,6 @@ module Fir
 
     Token = Struct.new(:word, :position)
     Position = Struct.new(:x, :y)
-    Indent = Struct.new(:indents, :executable?)
+    IndentBlock = Struct.new(:indents, :executable?)
   end
 end

@@ -38,6 +38,10 @@ module Fir
       @members.length
     end
 
+    def join(chr=nil)
+      map(&:join).join(chr)
+    end
+
     def ==(other)
       other.members == members
     end

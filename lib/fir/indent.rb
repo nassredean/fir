@@ -67,7 +67,7 @@ module Fir
         end
         deltas << delta
       end
-      IndentBlock.new(indents, executable?(indents))
+      IndentBlock.new(indents, executable?(indents, lines))
     end
 
     private
@@ -77,14 +77,15 @@ module Fir
       Token.new(word, position)
     end
 
-    def executable?(indents)
-      indents.length > 1 &&
-        indents[-1].zero? &&
+    def executable?(indents, lines)
+      indents[-1].zero? &&
+        lines[-1] == '' &&
         !in_block? &&
         !in_string? &&
         !in_heredoc? &&
         !in_paren? &&
-        !in_array?
+        !in_array? &&
+        !lines.all? { |line| line == '' }
     end
 
     def any_open?(token)

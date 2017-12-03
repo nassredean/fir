@@ -6,14 +6,21 @@ module Fir
     attr_reader :state
     attr_reader :new_state
     attr_reader :output
+    attr_reader :error
+    attr_reader :repl_binding
+    attr_reader :line_number
 
-    def initialize(output)
+    def initialize(output, error)
       @output = output
+      @error = error
+      @repl_binding = TOPLEVEL_BINDING
+      @line_number = 1
     end
 
     def update(state, new_state)
       erase_screen(state)
       draw_screen(new_state)
+      evaluate(new_state)
     end
 
     private
@@ -29,10 +36,36 @@ module Fir
     end
 
     def draw_screen(state)
-      output.syswrite(Renderer.new(state).render)
+      output.syswrite(state
+        .indents
+        .map { |delta| '  ' * delta }
+        .zip(state.lines.map(&:join))
+        .map(&:join)
+        .join("\n#{Cursor.horizontal_absolute(1)}"))
     end
 
+    def evaluate(state)
+      return unless state.executable?
+      begin
+        result = eval(state.lines.join("\n"), repl_binding, 'fir', line_number)
+      rescue Exception => e
+        result = e
+      ensure
+        # write the result to output
+        if result.class < Exception
+          stack = result.backtrace.take_while { |line| line !~ %r{/fir/\S+\.rb} }
+          error.syswrite("#{result.class}: #{result.message}\n    #{stack.join("\n    ")}")
+        else
+          output.syswrite(result.inspect)
+        end
+        # move the cursor down one line
+        output.syswrite(Cursor.next_line(1))
+      end
+    end
+
+
     class Cursor
+      # this should be a CursorHelpers module
       def self.previous_line(n)
         "\e[#{n}F"
       end
@@ -44,26 +77,9 @@ module Fir
       def self.clear(n)
         "\e[#{n}K"
       end
-    end
 
-    class Renderer
-      attr_reader :state
-
-      def initialize(state)
-        @state = state
-      end
-
-      def render
-        indents
-          .zip(state.lines.map(&:join))
-          .map(&:join)
-          .join("\n#{Cursor.horizontal_absolute(1)}")
-      end
-
-      private
-
-      def indents
-        @indents ||= state.indents.map { |d| '  ' * d }
+      def self.next_line(n)
+        "\e[#{n}E"
       end
     end
   end

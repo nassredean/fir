@@ -30,7 +30,7 @@ module Fir
     OPEN_HEREDOC_TOKEN = %w[<<- <<~].freeze
 
     def generate
-      lines.each.with_index.with_object([]) do |(line, line_index), deltas|
+      indents = lines.each.with_index.with_object([]) do |(line, line_index), deltas|
         delta = stack.length
         delta += array_stack.length if in_array?
         delta += paren_stack.length if in_paren?
@@ -67,6 +67,7 @@ module Fir
         end
         deltas << delta
       end
+      Indent.new(indents, executable?)
     end
 
     private
@@ -74,6 +75,14 @@ module Fir
     def construct_token(word, word_index, line_index)
       position = Position.new(word_index, line_index)
       Token.new(word, position)
+    end
+
+    def executable?
+      !in_block? &&
+        !in_string? &&
+        !in_heredoc? &&
+        !in_paren? &&
+        !in_array?
     end
 
     def any_open?(token)
@@ -158,6 +167,10 @@ module Fir
       paren_stack.length.positive?
     end
 
+    def in_block?
+      stack.length.positive?
+    end
+
     def in_heredoc?
       heredoc_stack.length.positive?
     end
@@ -167,7 +180,7 @@ module Fir
     end
 
     def closing_token?(token)
-      token.word == 'end' && stack.last && token.position.x.zero?
+      token.word == 'end' && in_block? && token.position.x.zero?
     end
 
     def unmatched_do_token?(token)
@@ -207,5 +220,6 @@ module Fir
 
     Token = Struct.new(:word, :position)
     Position = Struct.new(:x, :y)
+    Indent = Struct.new(:indents, :executable?)
   end
 end

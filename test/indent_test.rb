@@ -243,7 +243,7 @@ describe Fir::Indent do
           else
             puts "You just making it up!"
           end
-      CODE
+        CODE
       ).must_equal([0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0])
     end
   end
@@ -467,6 +467,98 @@ describe Fir::Indent do
           end
         CODE
       ).must_equal([0, 1, 2, 3, 4, 4, 4, 3, 2, 1, 1, 0, 0])
+    end
+  end
+
+  describe 'regular heredocs' do
+    it 'indents' do
+      indent_helper(
+        <<~CODE
+          def warning_message
+            <<-HEREDOC
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 1, 0, 0])
+      indent_helper(
+        <<~CODE
+          def warning_message
+            <<-HEREDOC
+              Subscription expiring soon!
+              Your free trial will expire in 5 days.
+              Please update your billing information.
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 2, 2, 2, 1, 0, 0])
+      indent_helper(
+        <<~CODE
+          def code
+            <<-HEREDOC
+              def cow
+              puts 'dog'
+              end
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 2, 2, 2, 1, 0, 0])
+      indent_helper(
+        <<~CODE
+          def warning_message
+            <<-HEREDOC
+              "
+              "
+              end
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 2, 2, 2, 1, 0, 0])
+    end
+  end
+
+  describe 'squiggly heredocs' do
+    it 'indents' do
+      indent_helper(
+        <<~CODE
+          def warning_message
+            <<~HEREDOC
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 1, 0, 0])
+      indent_helper(
+        <<~CODE
+          def warning_message
+            <<~HEREDOC
+              Subscription expiring soon!
+              Your free trial will expire in 5 days.
+              Please update your billing information.
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 2, 2, 2, 1, 0, 0])
+      indent_helper(
+        <<~CODE
+          def code
+            <<~HEREDOC
+              def cow
+              puts 'dog'
+              end
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 2, 2, 2, 1, 0, 0])
+      indent_helper(
+        <<~CODE
+          def warning_message
+            <<~HEREDOC
+              "
+              "
+              end
+            HEREDOC
+          end
+        CODE
+      ).must_equal([0, 1, 2, 2, 2, 1, 0, 0])
     end
   end
 end

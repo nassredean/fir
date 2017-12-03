@@ -10,6 +10,7 @@ module Fir
     attr_reader :delimiter_stack
     attr_reader :array_stack
     attr_reader :paren_stack
+    attr_reader :heredoc_stack
 
     def initialize(lines)
       @lines = lines
@@ -17,6 +18,7 @@ module Fir
       @delimiter_stack = []
       @array_stack = []
       @paren_stack = []
+      @heredoc_stack = []
     end
 
     OPEN_TOKENS = %w[if while for until unless def class module begin].freeze
@@ -25,12 +27,14 @@ module Fir
     IF_MIDWAY_TOKEN = %w[else elsif].freeze
     BEGIN_MIDWAY_TOKEN = %w[rescue ensure else].freeze
     BEGIN_IMPLICIT_TOKEN = %w[rescue ensure].freeze
+    OPEN_HEREDOC_TOKEN = %w[<<- <<~].freeze
 
     def generate
       lines.each.with_index.with_object([]) do |(line, line_index), deltas|
         delta = stack.length
         delta += array_stack.length if in_array?
         delta += paren_stack.length if in_paren?
+        delta += heredoc_stack.length if in_heredoc?
         line.split(' ').each_with_index do |word, word_index|
           token = construct_token(word, word_index, line_index)
           if any_open?(token)
@@ -54,6 +58,11 @@ module Fir
           elsif close_paren_token?(token)
             delta -= 1 if paren_stack.last.position.y != token.position.y
             paren_stack.pop
+          elsif open_heredoc_token?(token)
+            heredoc_stack.push(token)
+          elsif close_heredoc_token?(token)
+            delta -= 1 if heredoc_stack.last.position.y != token.position.y
+            heredoc_stack.pop
           end
         end
         deltas << delta
@@ -69,6 +78,7 @@ module Fir
 
     def any_open?(token)
       !in_string? &&
+        !in_heredoc? &&
         open_token?(token) ||
         when_open_token?(token) ||
         unmatched_do_token?(token)
@@ -76,6 +86,7 @@ module Fir
 
     def any_midway?(token)
       !in_string? &&
+        !in_heredoc? &&
         if_midway_token?(token) ||
         begin_midway_token?(token) ||
         when_midway_token?(token)
@@ -83,6 +94,7 @@ module Fir
 
     def any_close?(token)
       !in_string? &&
+        !in_heredoc? &&
         closing_token?(token) ||
         when_close_token?(token)
     end
@@ -96,6 +108,20 @@ module Fir
     def string_close_token?(token)
       in_string? &&
         ((token.word[-1] == delimiter_stack.last.word[0]) && (token.word[-2] != "\\"))
+    end
+
+    def open_heredoc_token?(token)
+      !in_string? &&
+        !in_heredoc? &&
+        token.word.length > 3 &&
+        OPEN_HEREDOC_TOKEN.include?(token.word[0..2]) &&
+        (token.word[3..-1] == token.word[3..-1].upcase)
+    end
+
+    def close_heredoc_token?(token)
+      !in_string? &&
+        in_heredoc? &&
+        heredoc_stack.last.word[3..-1] == token.word
     end
 
     def open_array_token?(token)
@@ -130,6 +156,10 @@ module Fir
 
     def in_paren?
       paren_stack.length.positive?
+    end
+
+    def in_heredoc?
+      heredoc_stack.length.positive?
     end
 
     def open_token?(token)

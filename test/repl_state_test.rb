@@ -6,42 +6,8 @@ require_relative '../lib/fir/repl_state'
 require_relative '../lib/fir/lines'
 require_relative '../lib/fir/cursor'
 require_relative './state_helper'
+require_relative './double/key_command'
 require_relative './key_command/key_command_interface_test'
-
-class CommandDouble
-  attr_reader :state
-  attr_reader :character
-
-  def initialize(state)
-    @state = state
-    @character = 'r'
-  end
-
-  def self.match?
-    true
-  end
-
-  def self.char_code
-    /.*/
-  end
-
-  def execute
-    execute_hook(@state)
-  end
-
-  def execute_hook(state)
-    state
-  end
-end
-
-describe CommandDouble do
-  include KeyCommandInterfaceTest
-  include KeyCommandSubclassTest
-
-  before do
-    @command = CommandDouble.new(@state)
-  end
-end
 
 describe Fir::ReplState do
   describe 'self.blank' do
@@ -62,15 +28,10 @@ describe Fir::ReplState do
   end
 
   describe 'initialization' do
-    it 'raises error with no arguments' do
-      assert_raises ArgumentError do
-        @collection = Fir::ReplState.new
-      end
-    end
-
     it 'sets members instance variable correctly with arguments' do
       @collection = Fir::ReplState.new(Fir::Lines.blank,
-                                       Fir::Cursor.blank)
+                                       Fir::Cursor.blank,
+                                       binding)
       @collection.lines.must_equal(Fir::Lines.blank)
       @collection.cursor.must_equal(Fir::Cursor.blank)
       @collection.indents.must_equal([0])
@@ -100,7 +61,7 @@ describe Fir::ReplState do
   describe 'clean' do
     it 'returns a blank state if the original state is a block' do
       @state = StateHelper.build([%w[d e f c o w], %w[e n d], ['']], [3, 1])
-      @command = CommandDouble.new(@state)
+      @command = Double::KeyCommand.new(@state)
       @new_state = @state.transition(@command)
       @new_state.must_equal(Fir::ReplState.blank)
     end
@@ -117,8 +78,10 @@ describe Fir::ReplState do
     it 'returns true when indents indicate an executable chunk of code' do
       @collection = Fir::ReplState.blank
       @collection.executable?.must_equal(false)
-      @another_collection = StateHelper.build([%w[d e f c o w], %w[e n d], ['']],
-                                              [3, 1])
+      @another_collection = StateHelper.build(
+        [%w[d e f c o w], %w[e n d], ['']],
+        [3, 1]
+      )
       @another_collection.executable?.must_equal(true)
     end
   end

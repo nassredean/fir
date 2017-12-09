@@ -10,14 +10,16 @@ module Fir
     attr_accessor :lines
     attr_accessor :cursor
     attr_reader :indent
+    attr_reader :repl_binding
 
     def self.blank
-      new(Lines.blank, Cursor.blank)
+      new(Lines.blank, Cursor.blank, TOPLEVEL_BINDING)
     end
 
-    def initialize(lines, cursor)
+    def initialize(lines, cursor, repl_binding)
       @lines = lines
       @cursor = cursor
+      @repl_binding = repl_binding
       set_indent
     end
 
@@ -30,11 +32,11 @@ module Fir
     end
 
     def clone
-      self.class.new(lines.clone, cursor.clone)
+      self.class.new(lines.clone, cursor.clone, repl_binding)
     end
 
     def blank
-      self.class.new(Lines.blank, Cursor.blank)
+      self.class.new(Lines.blank, Cursor.blank, repl_binding)
     end
 
     def blank?

@@ -38,7 +38,7 @@ module Fir
       @members.length
     end
 
-    def join(chr=nil)
+    def join(chr = nil)
       map(&:join).join(chr)
     end
 

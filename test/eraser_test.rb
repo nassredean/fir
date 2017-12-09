@@ -4,18 +4,18 @@
 require 'minitest/autorun'
 require_relative 'state_helper'
 require_relative './double/output'
-require_relative '../lib/fir/renderer'
+require_relative '../lib/fir/eraser'
 
-describe Fir::Renderer do
+describe Fir::Eraser do
   describe 'blank state' do
     before do
       @state = Fir::ReplState.blank
       @output = Double::Output.new
-      @renderer = Fir::Renderer.new(@output)
+      @eraser = Fir::Eraser.new(@output)
     end
 
-    it 'does not add any characters' do
-      @renderer.perform(@state)
+    it 'does not add any special characters' do
+      @eraser.perform(@state)
       @output.char_array.must_equal([])
     end
   end
@@ -27,12 +27,14 @@ describe Fir::Renderer do
         [3, 1]
       )
       @output = Double::Output.new
-      @renderer = Fir::Renderer.new(@output)
+      @eraser = Fir::Eraser.new(@output)
     end
 
-    it 'draws new lines' do
-      @renderer.perform(@state)
-      @output.char_array.join.must_equal("def cow\n\e[1Gend\n\e[1G")
+    it 'erases previous lines' do
+      @eraser.perform(@state)
+      @output.char_array.join.must_equal(
+        "\e[1G\e[0K\e[1G\e[0K\e[1F\e[0K\e[1G\e[0K\e[1F\e[0K"
+      )
     end
   end
 end

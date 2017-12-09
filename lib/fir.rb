@@ -2,7 +2,6 @@
 # encoding: UTF-8
 
 require 'io/console'
-
 require_relative 'fir/key'
 require_relative 'fir/key_command/key_command'
 require_relative 'fir/repl_state'

@@ -10,3 +10,13 @@ Metrics/BlockLength:
   Enabled: true
   Exclude: 
     - test/**/*
+
+Security/Eval:
+  Enabled: true
+  Exclude: 
+    - lib/fir/evaluater.rb
+
+Lint/RescueException:
+  Enabled: true
+  Exclude: 
+    - lib/fir/evaluater.rb

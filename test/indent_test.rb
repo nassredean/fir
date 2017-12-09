@@ -96,7 +96,6 @@ describe Fir::Indent do
     end
 
     it 'indents a nested def statement' do
-      Fir::Indent
       indent = indent_helper(
         <<~CODE
           def animal(y)
@@ -121,25 +120,38 @@ describe Fir::Indent do
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["#{token} x == 1 do", 'puts "cow"']).generate
+          indent = Fir::Indent.new(
+            ["#{token} x == 1 do", 'puts "cow"']
+          ).generate
           indent.indents.must_equal([0, 1])
           indent.executable?.must_equal(false)
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["#{token} x == 1 do", 'end', '']).generate
+          indent = Fir::Indent.new(
+            ["#{token} x == 1 do", 'end', '']
+          ).generate
           indent.indents.must_equal([0, 0, 0])
           indent.executable?.must_equal(true)
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["#{token} x == 1 do", 'puts "cow"', 'end', '']).generate
+          indent = Fir::Indent.new(
+            ["#{token} x == 1 do", 'puts "cow"', 'end', '']
+          ).generate
           indent.indents.must_equal([0, 1, 0, 0])
           indent.executable?.must_equal(true)
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["#{token} x == 1 do", 'puts "cow"', 'puts "cow"', 'end', '']).generate
+          indent = indent_helper(
+            <<~CODE
+              #{token} x == 1 do
+                puts "cow"
+                puts "cow"
+              end
+            CODE
+          )
           indent.indents.must_equal([0, 1, 1, 0, 0])
           indent.executable?.must_equal(true)
         end
@@ -163,13 +175,22 @@ describe Fir::Indent do
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["#{token} x == 1", 'puts "cow"', 'end', '']).generate
+          indent = Fir::Indent.new(
+            ["#{token} x == 1", 'puts "cow"', 'end', '']
+          ).generate
           indent.indents.must_equal([0, 1, 0, 0])
           indent.executable?.must_equal(true)
         end
 
         it 'indents correctly' do
-          indent = Fir::Indent.new(["#{token} x == 1", 'puts "cow"', 'puts "cow"', 'end', '']).generate
+          indent = indent_helper(
+            <<~CODE
+              #{token} x == 1
+                puts "cow"
+                puts "cow"
+              end
+            CODE
+          )
           indent.indents.must_equal([0, 1, 1, 0, 0])
           indent.executable?.must_equal(true)
         end

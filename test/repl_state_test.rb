@@ -99,7 +99,7 @@ describe Fir::ReplState do
 
   describe 'clean' do
     it 'returns a blank state if the original state is a block' do
-      @state = StateHelper.build([%w[d e f c o w], %w[e n d]], [3, 1])
+      @state = StateHelper.build([%w[d e f c o w], %w[e n d], ['']], [3, 1])
       @command = CommandDouble.new(@state)
       @new_state = @state.transition(@command)
       @new_state.must_equal(Fir::ReplState.blank)
@@ -117,7 +117,7 @@ describe Fir::ReplState do
     it 'returns true when indents indicate an executable chunk of code' do
       @collection = Fir::ReplState.blank
       @collection.executable?.must_equal(false)
-      @another_collection = StateHelper.build([%w[d e f c o w], %w[e n d]],
+      @another_collection = StateHelper.build([%w[d e f c o w], %w[e n d], ['']],
                                               [3, 1])
       @another_collection.executable?.must_equal(true)
     end

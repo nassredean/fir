@@ -35,7 +35,8 @@ describe Fir::KeyCommand::EnterCommand do
   describe 'with single preceeding line' do
     before do
       @old_state = Fir::ReplState.new(Fir::Lines.new(%w[a b c]),
-                                      Fir::Cursor.new(3, 0))
+                                      Fir::Cursor.new(3, 0),
+                                      binding)
       @new_state = Fir::KeyCommand::EnterCommand.new("\r",
                                                      @old_state).execute
     end
@@ -44,7 +45,8 @@ describe Fir::KeyCommand::EnterCommand do
       @new_state.lines.must_equal(Fir::Lines.new(%w[a b c], []))
       @new_state.cursor.must_equal(Fir::Cursor.new(0, 1))
       @old_state.must_equal(Fir::ReplState.new(Fir::Lines.new(%w[a b c]),
-                                               Fir::Cursor.new(3, 0)))
+                                               Fir::Cursor.new(3, 0),
+                                               binding))
     end
   end
 end

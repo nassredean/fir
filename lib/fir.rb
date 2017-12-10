@@ -9,19 +9,24 @@ require_relative 'fir/screen'
 
 module Fir
   class Repl
+    attr_reader :key
+    attr_reader :screen
+
     def self.start(input, output, error)
-      new(Key.new(input), Screen.new(output, error))
+      new(
+        Key.new(input),
+        Screen.new(output, error)
+      ).perform(ReplState.blank)
     end
 
     def initialize(key, screen)
-      repl(ReplState.blank, key, screen)
+      @key = key
+      @screen = screen
     end
 
-    private
-
-    def repl(state, key, screen)
+    def perform(state)
       state = yield(state) if block_given?
-      repl(state, key, screen) do
+      perform(state) do
         state.transition(KeyCommand.build(key.get, state)) do |new_state|
           screen.update(state, new_state)
         end

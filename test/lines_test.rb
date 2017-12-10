@@ -120,18 +120,16 @@ describe Fir::Lines do
   end
 
   describe 'remove' do
-    it 'removes correctly without memberse' do
+    it 'removes correctly without members' do
       @collection = Fir::Lines.new
-      @new_collection = @collection.remove
+      @collection.remove
       @collection.members.must_equal([])
-      @new_collection.members.must_equal([])
     end
 
     it 'adds correctly with members' do
-      @collection = Fir::Lines.new('a', 'b', 'c')
-      @new_collection = @collection.remove
-      @collection.members.must_equal(%w[a b c])
-      @new_collection.members.must_equal(%w[a b])
+      @collection = Fir::Lines.new(%w[a b c], %w[d])
+      @collection.remove
+      @collection.members.must_equal([%w[a b c]])
     end
   end
 end

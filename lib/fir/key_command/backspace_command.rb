@@ -17,7 +17,7 @@ class Fir
             new_state.lines[-1] = state.lines[-1].clone[0...-1]
           elsif state.cursor.x.zero? && state.cursor.y.positive?
             new_state.cursor.up.right(state.lines[-2].length)
-            new_state.lines = state.lines.remove
+            new_state.lines.remove
           end
         end
         new_state

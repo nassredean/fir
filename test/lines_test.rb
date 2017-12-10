@@ -65,14 +65,6 @@ describe Fir::Lines do
     end
   end
 
-  describe '[]=' do
-    it 'assigns correctly' do
-      @collection = Fir::Lines.new('a')
-      @collection[0] = 'b'
-      @collection[0].must_equal('b')
-    end
-  end
-
   describe 'length' do
     it 'when members is blank length is zero' do
       @collection = Fir::Lines.new

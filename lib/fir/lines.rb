@@ -23,11 +23,7 @@ class Fir
     end
 
     def [](key)
-      @members[key].clone
-    end
-
-    def []=(key, value)
-      @members[key] = value
+      @members[key]
     end
 
     def length
@@ -62,12 +58,8 @@ class Fir
       @members == [[]]
     end
 
-    def lines
-      map(&:join)
-    end
-
     def indent!
-      indent = Fir::Indent.new(lines).generate
+      indent = Fir::Indent.new(map(&:join)).generate
     end
   end
 end

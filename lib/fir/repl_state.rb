@@ -26,7 +26,6 @@ class Fir
     def transition(command)
       new_state = command.execute
       new_state.set_indent
-      new_state.lines.indent!
       yield new_state if block_given?
       return blank if new_state.executable?
       new_state

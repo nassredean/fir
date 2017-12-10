@@ -50,6 +50,14 @@ class Fir
       @members.pop
     end
 
+    def remove_char
+      @members[-1]&.pop
+    end
+
+    def add_char(n)
+      @members[-1].push(n)
+    end
+
     def blank?
       @members == [[]]
     end

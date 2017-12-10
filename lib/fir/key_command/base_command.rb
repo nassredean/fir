@@ -21,7 +21,9 @@ class Fir
       end
 
       def execute
-        execute_hook(state.clone)
+        new_state = state.clone
+        execute_hook(new_state)
+        new_state
       end
     end
   end

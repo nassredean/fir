@@ -14,10 +14,6 @@ class Fir
       new([])
     end
 
-    def blank?
-      @members == [[]]
-    end
-
     def clone
       self.class.new(*@members.clone.map(&:clone))
     end
@@ -53,5 +49,26 @@ class Fir
     def remove
       self.class.new(*(@members[0...-1]))
     end
+
+    def blank?
+      @members == [[]]
+    end
+
+    def lines
+      map(&:join)
+    end
+
+    def indent!
+      indent = Fir::Indent.new(lines).generate
+    end
+  end
+end
+
+class Line
+  include Enumerable
+  attr_reader :members
+
+  def initialize(members)
+    @members = members
   end
 end

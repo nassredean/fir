@@ -3,13 +3,11 @@
 
 require_relative 'lines'
 require_relative 'cursor'
-require_relative 'indent'
 
 class Fir
   class ReplState
     attr_accessor :lines
     attr_accessor :cursor
-    attr_reader :indent
     attr_reader :repl_binding
 
     def self.blank
@@ -20,14 +18,12 @@ class Fir
       @lines = lines
       @cursor = cursor
       @repl_binding = repl_binding
-      set_indent
     end
 
     def transition(command)
       new_state = command.execute
-      new_state.set_indent
       yield new_state if block_given?
-      return blank if new_state.executable?
+      return blank if new_state.lines.executable?
       new_state
     end
 
@@ -45,26 +41,6 @@ class Fir
 
     def ==(other)
       lines == other.lines && cursor == other.cursor
-    end
-
-    def indents
-      indent.indents
-    end
-
-    def executable?
-      indent.executable?
-    end
-
-    protected
-
-    def set_indent
-      @indent = compute_indent
-    end
-
-    private
-
-    def compute_indent
-      Fir::Indent.new(lines.map(&:join)).generate
     end
   end
 end

@@ -34,7 +34,6 @@ describe Fir::ReplState do
                                        binding)
       @collection.lines.must_equal(Fir::Lines.blank)
       @collection.cursor.must_equal(Fir::Cursor.blank)
-      @collection.indents.must_equal([0])
     end
   end
 
@@ -71,18 +70,6 @@ describe Fir::ReplState do
     it 'returns true when the state has a blank cursor and lines' do
       @collection = Fir::ReplState.blank
       @collection.blank?.must_equal(true)
-    end
-  end
-
-  describe 'executable?' do
-    it 'returns true when indents indicate an executable chunk of code' do
-      @collection = Fir::ReplState.blank
-      @collection.executable?.must_equal(false)
-      @another_collection = StateHelper.build(
-        [%w[d e f c o w], %w[e n d], ['']],
-        [3, 1]
-      )
-      @another_collection.executable?.must_equal(true)
     end
   end
 

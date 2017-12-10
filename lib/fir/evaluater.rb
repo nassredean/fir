@@ -16,10 +16,12 @@ class Fir
     end
 
     def perform(state)
-      return unless state.executable?
-      write_result(eval(state.lines.join("\n"), state.repl_binding, 'fir'))
-    rescue Exception => e
-      write_error(e)
+      return unless state.lines.executable?
+      begin
+        write_result(eval(state.lines.join("\n"), state.repl_binding, 'fir'))
+      rescue Exception => e
+        write_error(e)
+      end
     end
 
     private

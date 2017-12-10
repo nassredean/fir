@@ -6,122 +6,108 @@ require_relative '../lib/fir/lines'
 
 describe Fir::Lines do
   describe 'self.blank' do
-    it 'creates a blank collection' do
-      @collection = Fir::Lines.blank
-      @collection.members.must_equal([[]])
-      @collection.blank?.must_equal(true)
+    it 'creates a blank lines' do
+      @lines = Fir::Lines.blank
+      @lines.members.must_equal([[]])
+      @lines.blank?.must_equal(true)
     end
   end
 
   describe 'blank?' do
     it 'when members is blank is true' do
-      @collection = Fir::Lines.blank
-      @collection.blank?.must_equal(true)
+      @lines = Fir::Lines.blank
+      @lines.blank?.must_equal(true)
     end
 
     it 'when members has elements blank is false' do
-      @collection = Fir::Lines.new(%w[a b c])
-      @collection.blank?.must_equal(false)
-    end
-  end
-
-  describe 'initialization' do
-    it 'sets members instance variable correctly with no arguments' do
-      @collection = Fir::Lines.new
-      @collection.members.must_equal([])
-    end
-
-    it 'sets members instance variable correctly with arguments' do
-      @collection = Fir::Lines.new('a', 'b')
-      @collection.members.must_equal(%w[a b])
+      @lines = Fir::Lines.new(%w[a b c])
+      @lines.blank?.must_equal(false)
     end
   end
 
   describe 'clone' do
     it 'clones correctly with no members' do
-      @collection = Fir::Lines.new
-      @new_collection = @collection.clone
-      @new_collection.members.must_equal([])
+      @lines = Fir::Lines.blank
+      @new_lines = @lines.clone
+      @new_lines.members.must_equal([[]])
     end
 
     it 'clones correctly with members' do
-      @collection = Fir::Lines.new('a', 'b', 'c')
-      @new_collection = @collection.clone
-      @new_collection.members.must_equal(%w[a b c])
+      @lines = Fir::Lines.new(['a'], ['b'], ['c'])
+      @new_lines = @lines.clone
+      @new_lines.members.must_equal([['a'], ['b'], ['c']])
     end
   end
 
   describe '[]' do
     it 'calling a non existant member is nil' do
-      @collection = Fir::Lines.blank
-      @collection[0].must_equal([])
+      @lines = Fir::Lines.blank
+      @lines[0].must_equal([])
     end
 
     it 'calling an existant member is the correct value' do
-      @collection = Fir::Lines.new('a', 'b')
-      @collection[0].must_equal('a')
-      @collection[1].must_equal('b')
-      @collection[-1].must_equal('b')
+      @lines = Fir::Lines.new(['a'], ['b'])
+      @lines[0].must_equal(['a'])
+      @lines[1].must_equal(['b'])
+      @lines[-1].must_equal(['b'])
     end
   end
 
   describe 'length' do
-    it 'when members is blank length is zero' do
-      @collection = Fir::Lines.new
-      @collection.length.must_equal(0)
+    it 'blank line length is 1' do
+      @lines = Fir::Lines.blank
+      @lines.length.must_equal(1)
     end
 
     it 'when members has elements length is correct' do
-      @collection = Fir::Lines.new('a', 'b', 'c')
-      @collection.length.must_equal(3)
+      @lines = Fir::Lines.new(['a'], ['b'], ['c'])
+      @lines.length.must_equal(3)
     end
   end
 
   describe '==' do
-    it 'compares two empty collections' do
-      @collection_a = Fir::Lines.new
-      @collection_b = Fir::Lines.new
-      (@collection_a == @collection_b).must_equal(true)
+    it 'compares two empty liness' do
+      @lines_a = Fir::Lines.blank
+      @lines_b = Fir::Lines.blank
+      (@lines_a == @lines_b).must_equal(true)
     end
 
-    it 'compares two collections that are equal and returns true' do
-      @collection_a = Fir::Lines.new('a', 'b')
-      @collection_b = Fir::Lines.new('a', 'b')
-      (@collection_a == @collection_b).must_equal(true)
+    it 'compares two liness that are equal and returns true' do
+      @lines_a = Fir::Lines.new(['a'], ['b'])
+      @lines_b = Fir::Lines.new(['a'], ['b'])
+      (@lines_a == @lines_b).must_equal(true)
     end
 
-    it 'compares two collections that are not equal and returns false' do
-      @collection_a = Fir::Lines.new
-      @collection_b = Fir::Lines.new('a')
-      (@collection_a == @collection_b).must_equal(false)
+    it 'compares two liness that are not equal and returns false' do
+      @lines_a = Fir::Lines.blank
+      @lines_b = Fir::Lines.new(['a'])
+      (@lines_a == @lines_b).must_equal(false)
     end
   end
 
   describe 'add' do
-    it 'adds correctly without members' do
-      @collection = Fir::Lines.new
-      @collection.add(['a'])
-      @collection.members.must_equal([['a']])
-    end
-
-    it 'adds correctly with members' do
-      @collection = Fir::Lines.new(%w[a b c])
-      @collection.add(%w[d])
-      @collection.members.must_equal([%w[a b c], %w[d]])
+    it 'adds a new array and indents' do
+      @lines = Fir::Lines.blank
+      @lines.add(['a'])
+      @lines.members.must_equal([[], ['a']])
+      @lines.formatted_lines.first.str.must_equal('')
+      @lines.formatted_lines.first.delta.must_equal(0)
+      @lines.formatted_lines[-1].str.must_equal('a')
+      @lines.formatted_lines[-1].delta.must_equal(0)
     end
   end
 
   describe 'remove' do
     it 'removes correctly without members' do
-      @collection = Fir::Lines.new
-      @collection.remove
-      @collection.members.must_equal([])
+      @lines = Fir::Lines.blank
+      @lines.remove
+      @lines.members.must_equal([[]])
     end
 
     it 'adds correctly with members' do
-      @collection = Fir::Lines.new(%w[a b c], %w[d])
-      @collection.remove
-      @collection.members.must_equal([%w[a b c]])
+      @lines = Fir::Lines.new(%w[a b c], %w[d])
+      @lines.remove
+      @lines.members.must_equal([%w[a b c]])
     end
   end
 end

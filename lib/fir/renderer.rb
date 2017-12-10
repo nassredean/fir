@@ -14,12 +14,11 @@ class Fir
     end
 
     def perform(state)
-      output.syswrite(state
-        .indents
-        .map { |delta| '  ' * delta }
-        .zip(state.lines.map(&:join))
-        .map(&:join)
-        .join("\n#{horizontal_absolute(1)}"))
+      output.syswrite(
+        state.lines.formatted_lines.map do |line|
+          "#{'  ' * line.delta}#{line.str}"
+        end.join("\n#{horizontal_absolute(1)}")
+      )
     end
   end
 end

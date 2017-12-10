@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-module Fir
+class Fir
   class Cursor
     attr_reader :x
     attr_reader :y

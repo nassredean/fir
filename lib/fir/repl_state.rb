@@ -5,7 +5,7 @@ require_relative 'lines'
 require_relative 'cursor'
 require_relative 'indent'
 
-module Fir
+class Fir
   class ReplState
     attr_accessor :lines
     attr_accessor :cursor

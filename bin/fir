@@ -3,4 +3,4 @@
 # encoding: UTF-8
 
 require 'fir'
-Fir::Repl.start($stdin, $stdout, $stderr)
+Fir.start($stdin, $stdout, $stderr)

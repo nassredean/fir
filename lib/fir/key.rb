@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-module Fir
+class Fir
   class Key
     attr_reader :input
 

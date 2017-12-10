@@ -3,7 +3,7 @@
 
 require_relative './base_command'
 
-module Fir
+class Fir
   module KeyCommand
     class SingleKeyCommand < BaseCommand
       def self.char_code

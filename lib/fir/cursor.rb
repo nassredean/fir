@@ -3,8 +3,8 @@
 
 class Fir
   class Cursor
-    attr_accessor :x
-    attr_accessor :y
+    attr_reader :x
+    attr_reader :y
 
     def initialize(x, y)
       @x = x

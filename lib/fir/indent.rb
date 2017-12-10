@@ -3,7 +3,7 @@
 
 require 'ripper'
 
-module Fir
+class Fir
   class Indent
     attr_reader :lines
     attr_reader :stack

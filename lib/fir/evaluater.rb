@@ -3,7 +3,7 @@
 
 require_relative 'cursor_helper'
 
-module Fir
+class Fir
   class Evaluater
     include CursorHelper
 

@@ -5,7 +5,7 @@ require_relative 'eraser'
 require_relative 'evaluater'
 require_relative 'renderer'
 
-module Fir
+class Fir
   class Screen
     attr_reader :eraser
     attr_reader :renderer

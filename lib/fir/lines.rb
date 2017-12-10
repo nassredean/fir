@@ -5,9 +5,13 @@ class Fir
   class Lines
     include Enumerable
     attr_reader :members
+    Line = Struct.new(:chars, :delta, :prompt)
 
     def initialize(*members)
       @members = members
+      @lines = members.map do |member|
+        Line.new(member, nil, nil)
+      end
     end
 
     def self.blank
@@ -43,7 +47,7 @@ class Fir
     end
 
     def add(n)
-      self.class.new(*(@members + [n]))
+      @members.push(n)
     end
 
     def remove
@@ -61,14 +65,5 @@ class Fir
     def indent!
       indent = Fir::Indent.new(lines).generate
     end
-  end
-end
-
-class Line
-  include Enumerable
-  attr_reader :members
-
-  def initialize(members)
-    @members = members
   end
 end

@@ -108,16 +108,14 @@ describe Fir::Lines do
   describe 'add' do
     it 'adds correctly without members' do
       @collection = Fir::Lines.new
-      @new_collection = @collection.add('a')
-      @collection.members.must_equal([])
-      @new_collection.members.must_equal(['a'])
+      @collection.add(['a'])
+      @collection.members.must_equal([['a']])
     end
 
     it 'adds correctly with members' do
-      @collection = Fir::Lines.new('a', 'b', 'c')
-      @new_collection = @collection.add('d')
-      @collection.members.must_equal(%w[a b c])
-      @new_collection.members.must_equal(%w[a b c d])
+      @collection = Fir::Lines.new(%w[a b c])
+      @collection.add(%w[d])
+      @collection.members.must_equal([%w[a b c], %w[d]])
     end
   end
 

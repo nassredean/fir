@@ -3,8 +3,8 @@
 
 class Fir
   class Cursor
-    attr_reader :x
-    attr_reader :y
+    attr_accessor :x
+    attr_accessor :y
 
     def initialize(x, y)
       @x = x
@@ -15,24 +15,30 @@ class Fir
       new(0, 0)
     end
 
+    def set(x, y)
+      @x = x
+      @y = y
+      self
+    end
+
     def clone
       self.class.new(x, y)
     end
 
     def up
-      self.class.new(x, y - 1)
+      set(x, y - 1)
     end
 
     def down
-      self.class.new(x, y + 1)
+      set(x, y + 1)
     end
 
     def left(n)
-      self.class.new(x - n, y)
+      set(x - n, y)
     end
 
     def right(n)
-      self.class.new(x + n, y)
+      set(x + n, y)
     end
 
     def ==(other)

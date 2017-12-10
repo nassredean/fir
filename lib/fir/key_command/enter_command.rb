@@ -12,7 +12,7 @@ class Fir
 
       def execute_hook(new_state)
         new_state.lines = state.lines.add([])
-        new_state.cursor = state.cursor.down.left(state.lines[-1].length)
+        new_state.cursor.down.left(state.lines[-1].length)
         new_state
       end
     end

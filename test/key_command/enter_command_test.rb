@@ -26,15 +26,14 @@ describe Fir::KeyCommand::EnterCommand do
     end
 
     it 'adds the new line to the states line array and updates the cursor' do
-      @new_state.lines.must_equal(Fir::Lines.new([], []))
+      @new_state.lines.must_equal(Fir::Lines.build([], []))
       @new_state.cursor.must_equal(Fir::Cursor.new(x: 0, y: 1))
-      @old_state.must_equal(Fir::ReplState.blank)
     end
   end
 
   describe 'with single preceeding line' do
     before do
-      @old_state = Fir::ReplState.new(Fir::Lines.new(%w[a b c]),
+      @old_state = Fir::ReplState.new(Fir::Lines.build(%w[a b c]),
                                       Fir::Cursor.new(x: 3, y: 0),
                                       binding)
       @new_state = Fir::KeyCommand::EnterCommand.new("\r",
@@ -42,11 +41,8 @@ describe Fir::KeyCommand::EnterCommand do
     end
 
     it 'adds the new line to the line array and updates the cursor' do
-      @new_state.lines.must_equal(Fir::Lines.new(%w[a b c], []))
+      @new_state.lines.must_equal(Fir::Lines.build(%w[a b c], []))
       @new_state.cursor.must_equal(Fir::Cursor.new(x: 0, y: 1))
-      @old_state.must_equal(Fir::ReplState.new(Fir::Lines.new(%w[a b c]),
-                                               Fir::Cursor.new(x: 3, y: 0),
-                                               binding))
     end
   end
 end

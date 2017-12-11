@@ -47,25 +47,6 @@ describe Fir::ReplState do
     end
   end
 
-  describe 'blank' do
-    it 'creates a new state with blank lines and a blank cursor' do
-      @collection = Fir::ReplState.blank
-      @new_collection = @collection.blank
-      @new_collection.lines.must_equal(Fir::Lines.blank)
-      @new_collection.cursor.must_equal(Fir::Cursor.blank)
-      @new_collection.object_id.wont_equal(@collection.object_id)
-    end
-  end
-
-  describe 'clean' do
-    it 'returns a blank state if the original state is a block' do
-      @state = StateHelper.build([%w[d e f c o w], %w[e n d], ['']], [3, 1])
-      @command = Double::KeyCommand.new(@state)
-      @new_state = @state.transition(@command)
-      @new_state.must_equal(Fir::ReplState.blank)
-    end
-  end
-
   describe 'blank?' do
     it 'returns true when the state has a blank cursor and lines' do
       @collection = Fir::ReplState.blank

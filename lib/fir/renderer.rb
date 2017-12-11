@@ -1,24 +1,36 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-require_relative 'cursor_helper'
+require_relative 'screen_helper'
 
 class Fir
   class Renderer
-    include CursorHelper
-
+    include ScreenHelper
     attr_reader :output
 
     def initialize(output)
       @output = output
+      output.syswrite(prompt(1))
     end
 
     def perform(state)
       output.syswrite(
-        state.lines.formatted_lines.map do |line|
-          "[#{state.cursor.absolute_y}] #{'  ' * line.delta}#{line.str}"
-        end.join("\n#{horizontal_absolute(1)}")
+        lines_with_prompt(state.lines)
+        .join("\n#{horizontal_absolute(1)}")
+        .concat(state.lines.result_prompt)
       )
+    end
+
+    private
+
+    def lines_with_prompt(lines)
+      lines.to_r.map do |line|
+        "#{prompt(line.number)}#{format_line(line)}"
+      end
+    end
+
+    def format_line(line)
+      "#{'  ' * line.delta}#{line}"
     end
   end
 end

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-require_relative 'cursor_helper'
+require_relative 'screen_helper'
 
 class Fir
   class Evaluater
-    include CursorHelper
+    include ScreenHelper
 
     attr_reader :output
     attr_reader :error
@@ -16,11 +16,12 @@ class Fir
     end
 
     def perform(state)
-      return unless state.lines.executable?
       begin
         write_result(eval(state.lines.join("\n"), state.repl_binding, 'fir'))
       rescue Exception => e
         write_error(e)
+      ensure
+        output.syswrite(prompt(state.cursor.absolute_y))
       end
     end
 

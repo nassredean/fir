@@ -2,7 +2,7 @@
 # encoding: UTF-8
 
 class Fir
-  module CursorHelper
+  module ScreenHelper
     def previous_line(n)
       "\e[#{n}F"
     end
@@ -17,6 +17,10 @@ class Fir
 
     def clear(n)
       "\e[#{n}K"
+    end
+
+    def prompt(line_number)
+      "#{horizontal_absolute(1)}(fir):#{line_number}> "
     end
   end
 end

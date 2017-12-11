@@ -23,16 +23,20 @@ class Fir
     def transition(command)
       new_state = command.execute
       yield new_state if block_given?
-      return blank if new_state.lines.executable?
-      new_state
+      new_state.blank!
     end
 
     def clone
       self.class.new(lines.clone, cursor.clone, repl_binding)
     end
 
-    def blank
-      self.class.new(Lines.blank, Cursor.blank, repl_binding)
+    def blank!
+      if lines.executable?
+        cursor.blank!
+        lines.blank!
+        lines.indent!(cursor)
+      end
+      self
     end
 
     def blank?

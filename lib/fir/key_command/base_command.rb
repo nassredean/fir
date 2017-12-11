@@ -23,6 +23,7 @@ class Fir
       def execute
         new_state = state.clone
         execute_hook(new_state)
+        new_state.lines.indent!(new_state.cursor)
         new_state
       end
     end

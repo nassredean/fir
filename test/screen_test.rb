@@ -23,10 +23,12 @@ describe Fir::Screen do
   it 'invokes the perform method on the eraser, renderer, and evaluater' do
     @eraser.expect :perform, nil, [@state]
     @renderer.expect :perform, nil, [@new_state]
-    @evaluater.expect :perform, nil, [@new_state]
+    @evaluater.expect :perform, nil
     @screen.update(@state, @new_state)
     @eraser.verify
     @renderer.verify
-    @evaluater.verify
+    assert_raises(MockExpectationError, 'perform should not be called') do
+      @evaluater.verify
+    end
   end
 end

@@ -30,3 +30,9 @@ class Fir
     end
   end
 end
+
+# use the inherited registry example Sandi gave us
+# collapse this logic onto the base command
+# remove the KeyCommand module
+# rename the BaseCommand to KeyCommand
+# define "".to_command in lib/ext/string.rb

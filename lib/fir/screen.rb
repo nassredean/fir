@@ -20,7 +20,9 @@ class Fir
     def update(state, new_state)
       eraser.perform(state)
       renderer.perform(new_state)
-      evaluater.perform(new_state)
+      if new_state.lines.executable?
+        evaluater.perform(new_state)
+      end
     end
   end
 end

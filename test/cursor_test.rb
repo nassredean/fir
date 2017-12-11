@@ -22,19 +22,21 @@ describe Fir::Cursor do
 
   describe 'clone' do
     it 'initializes a new cursor with same x and y' do
-      @collection = Fir::Cursor.new(x: 1, y: 1)
+      @collection = Fir::Cursor.new(x: 1, y: 1, absolute_y: 4)
       @new_collection = @collection.clone
       @new_collection.x.must_equal(1)
       @new_collection.y.must_equal(1)
+      @new_collection.absolute_y.must_equal(4)
     end
   end
 
   describe 'up' do
     it 'initializes a new cursor with x=1 and y=2 without' do
-      @collection = Fir::Cursor.new(x: 1, y: 1)
+      @collection = Fir::Cursor.new(x: 1, y: 1, absolute_y: 2)
       @new_collection = @collection.up
       @new_collection.x.must_equal(1)
       @new_collection.y.must_equal(0)
+      @new_collection.absolute_y.must_equal(1)
     end
   end
 
@@ -44,6 +46,7 @@ describe Fir::Cursor do
       @new_collection = @collection.down
       @new_collection.x.must_equal(1)
       @new_collection.y.must_equal(2)
+      @new_collection.absolute_y.must_equal(2)
     end
   end
 

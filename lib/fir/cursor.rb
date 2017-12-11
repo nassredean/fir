@@ -13,14 +13,8 @@ class Fir
       @absolute_y = opts[:absolute_y] || 1
     end
 
-    def self.blank
-      new(x: 0, y: 0)
-    end
-
-    def set(x, y)
-      @x = x
-      @y = y
-      self
+    def self.blank(**opts)
+      new(x: 0, y: 0, absolute_y: opts[:absolute_y])
     end
 
     def clone
@@ -51,6 +45,18 @@ class Fir
 
     def blank?
       x.zero? && y.zero?
+    end
+
+    def blank!
+      self.class.blank(absolute_y: absolute_y)
+    end
+
+    private
+
+    def set(x, y)
+      @x = x
+      @y = y
+      self
     end
   end
 end

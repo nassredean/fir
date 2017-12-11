@@ -9,7 +9,7 @@ module StateHelper
   def self.build(lines, cursor)
     Fir::ReplState.new(
       Fir::Lines.new(*lines),
-      Fir::Cursor.new(cursor[0], cursor[1]),
+      Fir::Cursor.new(x: cursor[0], y: cursor[1]),
       binding
     )
   end

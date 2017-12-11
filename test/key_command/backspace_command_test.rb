@@ -36,7 +36,7 @@ describe Fir::KeyCommand::BackspaceCommand do
   describe 'with single line that has characters' do
     before do
       @old_state = Fir::ReplState.new(Fir::Lines.new(['a']),
-                                      Fir::Cursor.new(1, 0),
+                                      Fir::Cursor.new(x: 1, y: 0),
                                       binding)
       @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
                                                          @old_state).execute
@@ -46,7 +46,7 @@ describe Fir::KeyCommand::BackspaceCommand do
       @new_state.lines.must_equal(Fir::Lines.blank)
       @new_state.cursor.must_equal(Fir::Cursor.blank)
       @old_state.must_equal(Fir::ReplState.new(Fir::Lines.new(['a']),
-                                               Fir::Cursor.new(1, 0),
+                                               Fir::Cursor.new(x: 1, y: 0),
                                                binding))
     end
   end
@@ -54,7 +54,7 @@ describe Fir::KeyCommand::BackspaceCommand do
   describe 'with preceeding line containing no characters' do
     before do
       @old_state = Fir::ReplState.new(Fir::Lines.new([], []),
-                                      Fir::Cursor.new(0, 1),
+                                      Fir::Cursor.new(x: 0, y: 1),
                                       binding)
       @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
                                                          @old_state).execute
@@ -64,7 +64,7 @@ describe Fir::KeyCommand::BackspaceCommand do
       @new_state.lines.must_equal(Fir::Lines.blank)
       @new_state.cursor.must_equal(Fir::Cursor.blank)
       @old_state.must_equal(Fir::ReplState.new(Fir::Lines.new([], []),
-                                               Fir::Cursor.new(0, 1),
+                                               Fir::Cursor.new(x: 0, y: 1),
                                                binding))
     end
   end
@@ -72,7 +72,7 @@ describe Fir::KeyCommand::BackspaceCommand do
   describe 'With preceeding line containing characters' do
     before do
       @old_state = Fir::ReplState.new(Fir::Lines.new(['a'], []),
-                                      Fir::Cursor.new(0, 1),
+                                      Fir::Cursor.new(x: 0, y: 1),
                                       binding)
       @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
                                                          @old_state).execute
@@ -80,9 +80,9 @@ describe Fir::KeyCommand::BackspaceCommand do
 
     it 'pops line off of line array and draws a cursor up and then forward' do
       @new_state.lines.must_equal(Fir::Lines.new(['a']))
-      @new_state.cursor.must_equal(Fir::Cursor.new(1, 0))
+      @new_state.cursor.must_equal(Fir::Cursor.new(x: 1, y: 0))
       @old_state.must_equal(Fir::ReplState.new(Fir::Lines.new(['a'], []),
-                                               Fir::Cursor.new(0, 1),
+                                               Fir::Cursor.new(x: 0, y: 1),
                                                binding))
     end
   end

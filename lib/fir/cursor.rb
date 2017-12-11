@@ -5,14 +5,16 @@ class Fir
   class Cursor
     attr_reader :x
     attr_reader :y
+    attr_reader :absolute_y
 
-    def initialize(x, y)
-      @x = x
-      @y = y
+    def initialize(**opts)
+      @x = opts[:x]
+      @y = opts[:y]
+      @absolute_y = opts[:absolute_y] || 1
     end
 
     def self.blank
-      new(0, 0)
+      new(x: 0, y: 0)
     end
 
     def set(x, y)
@@ -22,14 +24,16 @@ class Fir
     end
 
     def clone
-      self.class.new(x, y)
+      self.class.new(x: x, y: y, absolute_y: absolute_y)
     end
 
     def up
+      @absolute_y -= 1
       set(x, y - 1)
     end
 
     def down
+      @absolute_y += 1
       set(x, y + 1)
     end
 

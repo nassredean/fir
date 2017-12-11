@@ -16,7 +16,7 @@ class Fir
     def perform(state)
       output.syswrite(
         state.lines.formatted_lines.map do |line|
-          "#{'  ' * line.delta}#{line.str}"
+          "[#{state.cursor.absolute_y}] #{'  ' * line.delta}#{line.str}"
         end.join("\n#{horizontal_absolute(1)}")
       )
     end

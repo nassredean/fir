@@ -17,9 +17,13 @@ class Fir
 
     def perform(state)
       return unless state.executable?
-      write_result(eval(state.lines.join("\n"), state.repl_binding, 'fir'))
-    rescue Exception => e
-      write_error(e)
+      begin
+        write_result(eval(state.lines.join("\n"), state.repl_binding, 'fir'))
+      rescue Exception => e
+        write_error(e)
+      ensure
+        output.syswrite(line_prompt)
+      end
     end
 
     private

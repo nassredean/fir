@@ -18,5 +18,9 @@ class Fir
     def clear(n)
       "\e[#{n}K"
     end
+
+    def line_prompt(prompt = '>')
+      "(fir)#{prompt} "
+    end
   end
 end

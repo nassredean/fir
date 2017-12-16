@@ -2,7 +2,7 @@
 # encoding: UTF-8
 
 class Fir
-  module CursorHelper
+  module ScreenHelper
     def previous_line(n)
       "\e[#{n}F"
     end
@@ -17,6 +17,10 @@ class Fir
 
     def clear(n)
       "\e[#{n}K"
+    end
+
+    def line_prompt(prompt = '>')
+      "(fir)#{prompt} "
     end
   end
 end

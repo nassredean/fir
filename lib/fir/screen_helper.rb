@@ -19,8 +19,8 @@ class Fir
       "\e[#{n}K"
     end
 
-    def prompt(line_number)
-      "#{horizontal_absolute(1)}(fir):#{line_number}> "
+    def prompt(line_number, prompt)
+      "#{horizontal_absolute(1)}(fir):#{line_number}#{prompt} "
     end
   end
 end

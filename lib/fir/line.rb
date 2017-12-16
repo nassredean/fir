@@ -6,6 +6,7 @@ class Fir
     attr_reader :members
     attr_accessor :delta
     attr_accessor :number
+    attr_accessor :prompt
 
     def initialize(members)
       @members = members

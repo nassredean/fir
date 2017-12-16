@@ -2,6 +2,7 @@
 # encoding: UTF-8
 
 require_relative './base_command'
+require 'pry'
 
 class Fir
   module KeyCommand
@@ -16,6 +17,7 @@ class Fir
           new_state.cursor.left(1)
           new_state.lines.remove_char
         elsif state.cursor.x.zero? && state.cursor.y.positive?
+          binding.pry
           new_state.cursor.up.right(state.lines[-2].length)
           new_state.lines.remove
         end

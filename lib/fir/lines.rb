@@ -96,6 +96,7 @@ class Fir
       members.last.number = cursor.absolute_y
       each_with_index.map do |line, i|
         line.delta = indent.indents[i]
+        line.prompt = line.delta == 0 ? '>' : '*'
       end
     end
   end

@@ -10,7 +10,7 @@ class Fir
 
     def initialize(output)
       @output = output
-      output.syswrite(prompt(1))
+      output.syswrite(prompt(1, '>'))
     end
 
     def perform(state)
@@ -25,7 +25,7 @@ class Fir
 
     def lines_with_prompt(lines)
       lines.to_r.map do |line|
-        "#{prompt(line.number)}#{format_line(line)}"
+        "#{prompt(line.number, line.prompt)}#{format_line(line)}"
       end
     end
 

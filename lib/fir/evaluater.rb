@@ -21,7 +21,7 @@ class Fir
       rescue Exception => e
         write_error(e)
       ensure
-        output.syswrite(prompt(state.cursor.absolute_y))
+        output.syswrite(prompt(state.cursor.absolute_y, '>'))
       end
     end
 

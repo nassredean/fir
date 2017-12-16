@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
-require_relative 'cursor_helper'
+require_relative 'screen_helper'
 
 class Fir
   class Renderer
-    include CursorHelper
+    include ScreenHelper
 
     attr_reader :output
 

@@ -2,15 +2,15 @@
 # encoding: UTF-8
 
 require 'minitest/autorun'
-require_relative '../lib/fir/cursor_helper'
+require_relative '../lib/fir/screen_helper'
 
 class DummyClass
 end
 
-describe Fir::CursorHelper do
+describe Fir::ScreenHelper do
   before do
     @dummy_class = DummyClass.new
-    @dummy_class.extend(Fir::CursorHelper)
+    @dummy_class.extend(Fir::ScreenHelper)
   end
 
   describe '#previous_line' do

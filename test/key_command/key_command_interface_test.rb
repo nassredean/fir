@@ -6,8 +6,8 @@ module KeyCommandInterfaceTest
     assert_respond_to(@command, :execute)
   end
 
-  def test_implements_the_matchable_interface
-    assert_respond_to(@command.class, :match?)
+  def test_implements_the_handleable_interface
+    assert_respond_to(@command.class, :handles?)
   end
 
   def test_implements_the_state_interface
@@ -25,6 +25,6 @@ module KeyCommandSubclassTest
   end
 
   def test_responds_to_character_code
-    assert_respond_to(@command.class, :char_code)
+    assert_respond_to(@command.class, :character_regex)
   end
 end

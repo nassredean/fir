@@ -4,13 +4,13 @@
 require_relative './key_command'
 
 class Fir
-  class CtrlCCommand < KeyCommand
+  class CtrlDCommand < KeyCommand
     def self.character_regex
-      /^\u0003$/
+      /^\u0004$/
     end
 
-    def execute_hook(new_state)
-      new_state.blank
+    def execute_hook(_)
+      exit(0)
     end
   end
 end

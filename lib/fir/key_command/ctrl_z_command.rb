@@ -4,13 +4,14 @@
 require_relative './key_command'
 
 class Fir
-  class CtrlCCommand < KeyCommand
+  class CtrlZCommand < KeyCommand
     def self.character_regex
-      /^\u0003$/
+      /^\u001A$/
     end
 
     def execute_hook(new_state)
-      new_state.blank
+      `kill -TSTP #{Process.pid}`
+      new_state
     end
   end
 end

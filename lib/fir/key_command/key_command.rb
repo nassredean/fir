@@ -53,5 +53,6 @@ end
 
 require_relative './backspace_command'
 require_relative './ctrl_c_command'
+require_relative './ctrl_d_command'
 require_relative './enter_command'
 require_relative './single_key_command'

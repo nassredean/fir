@@ -17,7 +17,7 @@ class Fir
     end
 
     def self.registry
-      @@registry ||= []
+      @@registry ||= [KeyCommand]
     end
 
     def self.register(candidate)
@@ -43,6 +43,10 @@ class Fir
 
     def execute
       execute_hook(state.clone)
+    end
+
+    def execute_hook(new_state)
+      new_state
     end
   end
 end

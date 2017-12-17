@@ -8,22 +8,22 @@ require_relative '../../lib/fir/lines'
 require_relative '../../lib/fir/cursor'
 require_relative './key_command_interface_test'
 
-describe Fir::KeyCommand::BackspaceCommand do
+describe Fir::BackspaceCommand do
   describe 'interface' do
     include KeyCommandInterfaceTest
     include KeyCommandSubclassTest
 
     before do
-      @command = Fir::KeyCommand::BackspaceCommand.new("\177",
-                                                       Fir::ReplState.blank)
+      @command = Fir::BackspaceCommand.new("\177",
+                                           Fir::ReplState.blank)
     end
   end
 
   describe 'with single line that has no characters' do
     before do
       @old_state = Fir::ReplState.blank
-      @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
-                                                         @old_state).execute
+      @new_state = Fir::BackspaceCommand.new("\177",
+                                             @old_state).execute
     end
 
     it 'doesn\'t append to the array and the cursor remains at origin' do
@@ -38,8 +38,8 @@ describe Fir::KeyCommand::BackspaceCommand do
       @old_state = Fir::ReplState.new(Fir::Lines.new(['a']),
                                       Fir::Cursor.new(1, 0),
                                       binding)
-      @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
-                                                         @old_state).execute
+      @new_state = Fir::BackspaceCommand.new("\177",
+                                             @old_state).execute
     end
 
     it 'pops character off of last line in line array and updates the cursor' do
@@ -56,8 +56,8 @@ describe Fir::KeyCommand::BackspaceCommand do
       @old_state = Fir::ReplState.new(Fir::Lines.new([], []),
                                       Fir::Cursor.new(0, 1),
                                       binding)
-      @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
-                                                         @old_state).execute
+      @new_state = Fir::BackspaceCommand.new("\177",
+                                             @old_state).execute
     end
 
     it 'pops last line in line array and updates cursor' do
@@ -74,8 +74,8 @@ describe Fir::KeyCommand::BackspaceCommand do
       @old_state = Fir::ReplState.new(Fir::Lines.new(['a'], []),
                                       Fir::Cursor.new(0, 1),
                                       binding)
-      @new_state = Fir::KeyCommand::BackspaceCommand.new("\177",
-                                                         @old_state).execute
+      @new_state = Fir::BackspaceCommand.new("\177",
+                                             @old_state).execute
     end
 
     it 'pops line off of line array and draws a cursor up and then forward' do

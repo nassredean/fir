@@ -11,11 +11,11 @@ module Double
       @character = 'r'
     end
 
-    def self.match?
+    def self.handles?
       true
     end
 
-    def self.char_code
+    def self.character_regex
       /.*/
     end
 

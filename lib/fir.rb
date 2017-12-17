@@ -26,7 +26,7 @@ class Fir
   def perform(state)
     state = yield(state) if block_given?
     perform(state) do
-      state.transition(KeyCommand.build(key.get, state)) do |new_state|
+      state.transition(KeyCommand.for(key.get, state)) do |new_state|
         screen.update(state, new_state)
       end
     end

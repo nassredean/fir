@@ -6,24 +6,24 @@ require_relative '../../lib/fir/key_command/key_command'
 require_relative '../../lib/fir/repl_state'
 
 describe Fir::KeyCommand do
-  describe 'self.build' do
+  describe 'self.for' do
     it 'instantiates the correct command' do
       Fir::KeyCommand
-        .build("\177", Fir::ReplState.blank)
+        .for("\177", Fir::ReplState.blank)
         .class
-        .must_equal(Fir::KeyCommand::BackspaceCommand)
+        .must_equal(Fir::BackspaceCommand)
       Fir::KeyCommand
-        .build("\u0003", Fir::ReplState.blank)
+        .for("\u0003", Fir::ReplState.blank)
         .class
-        .must_equal(Fir::KeyCommand::CtrlCCommand)
+        .must_equal(Fir::CtrlCCommand)
       Fir::KeyCommand
-        .build("\r", Fir::ReplState.blank)
+        .for("\r", Fir::ReplState.blank)
         .class
-        .must_equal(Fir::KeyCommand::EnterCommand)
+        .must_equal(Fir::EnterCommand)
       Fir::KeyCommand
-        .build('c', Fir::ReplState.blank)
+        .for('c', Fir::ReplState.blank)
         .class
-        .must_equal(Fir::KeyCommand::SingleKeyCommand)
+        .must_equal(Fir::SingleKeyCommand)
     end
   end
 end

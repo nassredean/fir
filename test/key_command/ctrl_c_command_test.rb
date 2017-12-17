@@ -12,7 +12,7 @@ describe 'Ctrl-C input' do
 
   before do
     @old_state = Fir::ReplState.blank
-    @command = Fir::KeyCommand::CtrlCCommand.new("\u0003", @old_state)
+    @command = Fir::CtrlCCommand.new("\u0003", @old_state)
   end
 
   it 'must raise a SystemExit' do

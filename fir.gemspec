@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.description   = s.summary
   s.authors       = ['Nassredean Nasseri']
   s.email         = 'dean@nasseri.io'
-  s.files         = ['lib/fir.rb']
+  s.files         = `git ls-files bin lib *.md LICENSE`.split("\n")
   s.executables   = ['fir']
   s.require_paths = ['lib']
   s.license       = 'MIT'

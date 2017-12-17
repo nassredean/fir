@@ -17,7 +17,7 @@ class Fir
     end
 
     def self.registry
-      @@registry ||= [KeyCommand]
+      @registry ||= [KeyCommand]
     end
 
     def self.register(candidate)

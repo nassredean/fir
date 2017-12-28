@@ -11,7 +11,8 @@ class Fir
 
     def execute_hook(new_state)
       paste_buffer = `pbpaste`
-      new_state.lines[-1] = state.lines[-1].clone.push(*paste_buffer.split(''))
+      new_state.lines[state.cursor.y] =
+        state.lines[state.cursor.y].clone.insert(state.cursor.x, *paste_buffer.split('')).flatten
       new_state.cursor = state.cursor.right(paste_buffer.length)
       new_state
     end

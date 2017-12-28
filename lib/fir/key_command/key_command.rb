@@ -51,10 +51,12 @@ class Fir
   end
 end
 
+require_relative './single_key_command'
+require_relative './enter_command'
 require_relative './backspace_command'
 require_relative './ctrl_c_command'
 require_relative './ctrl_d_command'
 require_relative './ctrl_z_command'
 require_relative './ctrl_v_command'
-require_relative './enter_command'
-require_relative './single_key_command'
+require_relative './left_arrow_command'
+require_relative './right_arrow_command'

@@ -29,7 +29,7 @@ class Fir
     end
 
     def self.handles?(character)
-      character_regex.match(character)
+      Array(character_regex).any? { |re| re.match(character) }
     end
 
     def self.character_regex

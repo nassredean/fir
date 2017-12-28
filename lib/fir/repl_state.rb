@@ -47,6 +47,14 @@ class Fir
       lines == other.lines && cursor == other.cursor
     end
 
+    def current_line=(new_line)
+      lines[cursor.y] = new_line
+    end
+
+    def current_line
+      lines[cursor.y]
+    end
+
     def indents
       indent.indents
     end

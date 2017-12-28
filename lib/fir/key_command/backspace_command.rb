@@ -13,9 +13,9 @@ class Fir
       unless state.blank?
         if state.cursor.x.positive?
           new_state.cursor = state.cursor.left(1)
-          new_line = state.lines[state.cursor.y].clone
+          new_line = state.current_line.clone
           new_line.delete_at(state.cursor.x - 1)
-          new_state.lines[state.cursor.y] = new_line
+          new_state.current_line = new_line
         elsif state.cursor.x.zero? && state.cursor.y.positive?
           new_state.cursor =
             state.cursor.up.right(state.lines[state.cursor.y - 1].length)

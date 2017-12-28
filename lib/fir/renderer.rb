@@ -21,8 +21,8 @@ class Fir
 
     def rendered_cursor(state)
       cursor = ''
-      if state.cursor.x != state.lines[state.cursor.y].length
-        cursor = "#{cursor}#{cursor_back(state.lines[state.cursor.y].length - state.cursor.x)}"
+      if state.cursor.x != state.current_line.length
+        cursor = "#{cursor}#{cursor_back(state.current_line.length - state.cursor.x)}"
       end
       cursor
     end

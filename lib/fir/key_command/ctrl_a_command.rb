@@ -4,15 +4,15 @@
 require_relative './key_command'
 
 class Fir
-  class RightArrowCommand < KeyCommand
+  class CtrlACommand < KeyCommand
     def self.character_regex
-      [/^\e\[C$/, /^\x06$/]
+      /^\x01$/
     end
 
     def execute_hook(new_state)
       unless state.blank?
-        if state.cursor.x < state.current_line.length
-          new_state.cursor = state.cursor.right(1)
+        if state.cursor.x.positive?
+          new_state.cursor = state.cursor.left(state.cursor.x)
         end
       end
       new_state

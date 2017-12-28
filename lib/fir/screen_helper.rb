@@ -19,6 +19,10 @@ class Fir
       "\e[#{n}K"
     end
 
+    def cursor_back(n)
+      "\e[#{n}D"
+    end
+
     def line_prompt(prompt = '>')
       "(fir)#{prompt} "
     end

@@ -15,10 +15,19 @@ class Fir
     end
 
     def perform(state)
-      output.syswrite(rendered_output(state))
+      output.syswrite(rendered_lines(state))
+      output.syswrite(rendered_cursor(state))
     end
 
-    def rendered_output(state)
+    def rendered_cursor(state)
+      cursor = ''
+      if state.cursor.x != state.lines[state.cursor.y].length
+        cursor = "#{cursor}#{cursor_back(state.lines[state.cursor.y].length - state.cursor.x)}"
+      end
+      cursor
+    end
+
+    def rendered_lines(state)
       lines_with_prompt(state)
         .map(&:join)
         .join("\n#{horizontal_absolute(1)}")

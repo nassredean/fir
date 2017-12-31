@@ -4,6 +4,8 @@
 require_relative 'lines'
 require_relative 'cursor'
 require_relative 'indent'
+require_relative 'history'
+require_relative 'suggestion'
 
 class Fir
   class ReplState
@@ -63,15 +65,20 @@ class Fir
       indent.executable?
     end
 
+    def suggestion
+      line = current_line.join
+      if line.length.positive?
+        Fir::Suggestion.new(line, Fir::History.history).generate
+      end
+    end
+
     protected
 
     def set_indent
-      @indent = compute_indent
+      @indent = get_indent
     end
 
-    private
-
-    def compute_indent
+    def get_indent
       Fir::Indent.new(lines.map(&:join)).generate
     end
   end

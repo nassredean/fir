@@ -6,7 +6,6 @@ require_relative 'screen_helper'
 class Fir
   class Renderer
     include ScreenHelper
-
     attr_reader :output
 
     def initialize(output)
@@ -17,6 +16,13 @@ class Fir
     def perform(state)
       output.syswrite(rendered_lines(state))
       output.syswrite(rendered_cursor(state))
+      output.syswrite(rendered_suggestion(state)) if state.suggestion
+    end
+
+    def rendered_suggestion(state)
+      if state.suggestion.length.positive?
+        "#{state.suggestion}#{cursor_back(state.suggestion.length)}"
+      end
     end
 
     def rendered_cursor(state)

@@ -22,15 +22,19 @@ class Fir
   end
 
   def self.parse_opts(output)
-    options = {}
     OptionParser.new do |cl_opts|
       cl_opts.banner = "Usage: fir [options]"
       cl_opts.on("-v", "--version", "Show version") do |v|
-        options[:version] = v
+        config[:version] = v
       end
     end.parse!
-    process_immediate_opts(options, output)
-    options
+    process_immediate_opts(config, output)
+  end
+
+  def self.config
+    @config ||= {
+      history: '~/.irb_history'
+    }
   end
 
   def self.process_immediate_opts(opts, output)

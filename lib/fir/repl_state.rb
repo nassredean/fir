@@ -72,6 +72,10 @@ class Fir
       end
     end
 
+    def commit_current_line_to_history
+      Fir::History.add_line_to_history_file(current_line.join)
+    end
+
     protected
 
     def set_indent

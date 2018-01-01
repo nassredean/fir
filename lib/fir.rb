@@ -23,8 +23,8 @@ class Fir
 
   def self.parse_opts(output)
     OptionParser.new do |cl_opts|
-      cl_opts.banner = "Usage: fir [options]"
-      cl_opts.on("-v", "--version", "Show version") do |v|
+      cl_opts.banner = 'Usage: fir [options]'
+      cl_opts.on('-v', '--version', 'Show version') do |v|
         config[:version] = v
       end
     end.parse!
@@ -38,10 +38,9 @@ class Fir
   end
 
   def self.process_immediate_opts(opts, output)
-    if opts[:version]
-      output.syswrite(Fir::VERSION)
-      exit(0)
-    end
+    return unless opts[:version]
+    output.syswrite(Fir::VERSION)
+    exit(0)
   end
 
   def initialize(key, screen)

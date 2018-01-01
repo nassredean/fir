@@ -25,7 +25,7 @@ class Fir
       @lines = lines
       @cursor = cursor
       @repl_binding = repl_binding
-      @history =  history
+      @history = history
       set_indent
     end
 
@@ -92,10 +92,10 @@ class Fir
     protected
 
     def set_indent
-      @indent = get_indent
+      @indent = indent!
     end
 
-    def get_indent
+    def indent!
       Fir::Indent.new(lines.map(&:join)).generate
     end
   end

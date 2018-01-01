@@ -6,7 +6,7 @@ require_relative './key_command'
 class Fir
   class UpArrowCommand < KeyCommand
     def self.character_regex
-      /^\e\[A$/
+      [/^\e\[A$/, /\x10/]
     end
 
     def execute_hook(new_state)

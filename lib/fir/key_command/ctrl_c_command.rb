@@ -10,6 +10,7 @@ class Fir
     end
 
     def execute_hook(new_state)
+      new_state.history.reset
       new_state.blank
     end
   end

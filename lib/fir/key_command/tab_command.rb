@@ -15,6 +15,7 @@ class Fir
         *state.suggestion.split('')
       ).flatten
       new_state.cursor = state.cursor.right(state.suggestion.length)
+      new_state.history.reset
       new_state
     end
   end

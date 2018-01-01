@@ -14,6 +14,7 @@ class Fir
       new_state.current_line =
         state.current_line.clone.insert(state.cursor.x, *paste_buffer.split('')).flatten
       new_state.cursor = state.cursor.right(paste_buffer.length)
+      new_state.history.reset
       new_state
     end
   end

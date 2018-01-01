@@ -13,6 +13,7 @@ class Fir
     def execute_hook(new_state)
       new_state.current_line = state.lines[-1].clone.insert(state.cursor.x, character)
       new_state.cursor = state.cursor.right(1)
+      new_state.history.reset
       new_state
     end
   end

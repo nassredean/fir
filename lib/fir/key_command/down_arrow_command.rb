@@ -4,14 +4,14 @@
 require_relative './key_command'
 
 class Fir
-  class CtrlCCommand < KeyCommand
+  class DownArrowCommand < KeyCommand
     def self.character_regex
-      /^\u0003$/
+      [/^\e\[B$/, /\x0E/]
     end
 
     def execute_hook(new_state)
-      new_state.history.reset
-      new_state.blank
+      new_state.history.down
+      new_state
     end
   end
 end

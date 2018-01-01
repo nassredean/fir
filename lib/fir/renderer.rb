@@ -6,7 +6,6 @@ require_relative 'screen_helper'
 class Fir
   class Renderer
     include ScreenHelper
-
     attr_reader :output
 
     def initialize(output)
@@ -17,6 +16,12 @@ class Fir
     def perform(state)
       output.syswrite(rendered_lines(state))
       output.syswrite(rendered_cursor(state))
+      output.syswrite(rendered_suggestion(state)) if state.suggestion
+    end
+
+    def rendered_suggestion(state)
+      return unless state.suggestion.length.positive?
+      "#{state.suggestion}#{cursor_back(state.suggestion.length)}"
     end
 
     def rendered_cursor(state)
@@ -36,7 +41,7 @@ class Fir
 
     def lines_with_prompt(state)
       lines_to_render(state).map.with_index do |line, i|
-        prompt = state.indents[i] == 0 ? '>' : '*'
+        prompt = state.indents[i].zero? ? '>' : '*'
         [line_prompt(prompt), ('  ' * state.indents[i]), line.join]
       end
     end

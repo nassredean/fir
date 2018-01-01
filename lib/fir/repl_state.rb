@@ -13,6 +13,7 @@ class Fir
     attr_accessor :cursor
     attr_reader :indent
     attr_reader :repl_binding
+    attr_reader :history
 
     def self.blank
       new(Lines.blank, Cursor.blank, TOPLEVEL_BINDING)
@@ -22,6 +23,7 @@ class Fir
       @lines = lines
       @cursor = cursor
       @repl_binding = repl_binding
+      @history = Fir::History.new
       set_indent
     end
 
@@ -66,10 +68,7 @@ class Fir
     end
 
     def suggestion
-      line = current_line.join
-      if line.length.positive?
-        Fir::Suggestion.new(line, Fir::History.history).generate
-      end
+      history.suggestion(current_line.join)
     end
 
     def commit_current_line_to_history

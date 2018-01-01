@@ -39,6 +39,8 @@ class Fir
       def history
         if (history_file && File.exists?(history_file))
           IO.readlines(history_file).map { |e| e.chomp }
+        else
+          []
         end
       end
 

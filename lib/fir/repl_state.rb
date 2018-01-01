@@ -9,21 +9,23 @@ require_relative 'suggestion'
 
 class Fir
   class ReplState
-    attr_accessor :lines
-    attr_accessor :cursor
-    attr_reader :indent
-    attr_reader :repl_binding
-    attr_reader :history
+    attr_accessor :lines, :cursor
+    attr_reader :indent, :repl_binding, :history
 
     def self.blank
-      new(Lines.blank, Cursor.blank, TOPLEVEL_BINDING)
+      new(Lines.blank, Cursor.blank)
     end
 
-    def initialize(lines, cursor, repl_binding)
+    def initialize(
+      lines,
+      cursor,
+      repl_binding = TOPLEVEL_BINDING,
+      history = Fir::History.new
+    )
       @lines = lines
       @cursor = cursor
       @repl_binding = repl_binding
-      @history = Fir::History.new
+      @history =  history
       set_indent
     end
 
@@ -36,11 +38,21 @@ class Fir
     end
 
     def clone
-      self.class.new(lines.clone, cursor.clone, repl_binding)
+      self.class.new(
+        lines.clone,
+        cursor.clone,
+        repl_binding,
+        history
+      )
     end
 
     def blank
-      self.class.new(Lines.blank, Cursor.blank, repl_binding)
+      self.class.new(
+        Lines.blank,
+        Cursor.blank,
+        repl_binding,
+        history
+      )
     end
 
     def blank?
@@ -72,7 +84,9 @@ class Fir
     end
 
     def commit_current_line_to_history
-      Fir::History.add_line_to_history_file(current_line.join)
+      Fir::History.add_line_to_history_file(
+        current_line.join
+      )
     end
 
     protected

@@ -1,28 +1,33 @@
 # frozen_string_literal: true
 # encoding: UTF-8
 
+require_relative '../fir'
+
 class Fir
   class History
-    attr_reader :counter
+    attr_reader :active_selection
 
     def initialize
-      @counter = 0
+      @active_selection = 0
     end
 
     def reset
-      @counter = 0
+      @active_selection = 0
     end
 
     def up
-      @counter += 1
+      @active_selection += 1
     end
 
     def down
-      @counter -= 1 if counter.positive?
+      @active_selection -= 1 if active_selection.positive?
     end
 
     def suggestion(line)
-      Fir::Suggestion.new(line, Fir::History.history).generate(counter)
+      Fir::Suggestion.new(
+        line,
+        Fir::History.history
+      ).generate(active_selection)
     end
 
     class << self

@@ -20,7 +20,7 @@ class Fir
       if str == '' && i.positive?
         history[-i]
       elsif str != ''
-        filtered_history(str)[i]
+        filtered_history(str)[-i]
       end
     end
 

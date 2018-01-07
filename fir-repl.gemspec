@@ -3,7 +3,7 @@
 require File.expand_path('../lib/fir/version', __FILE__)
 
 Gem::Specification.new do |s|
-  s.name          = 'fir'
+  s.name          = 'fir-repl'
   s.version       = Fir::VERSION
   s.date          = '2017-07-18'
   s.summary       = 'A Ruby REPL inspired by the Fish shell'

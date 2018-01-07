@@ -12,6 +12,9 @@ Fir does bring some features to the table that pry and other REPL's do not have.
 As the video demonstrates, fir is able to indent your code as soon as it is typed, not just when you hit enter. It also can suggest lines from your history file as you type as well!
 
 ## Install
+```
+gem install fir-repl
+```
 
 ## Usage
 ```
@@ -42,13 +45,6 @@ Fir aims to bring familiar bash keyboard shortcuts that we all know and love, ho
 | Ctrl + t | N/A | Swap the last two characters before the cursor (typo) | Not implemented |
 | Ctrl + y | N/A | Paste the last thing to be cut (yank)                 | Not implemented |
 | Сtrl + _ | N/A | Undo                                                  | Not implemented |
-
-
-
-
-
-
-
 
 ## Future Ideas
 Below is a list of ideas/features that I would like to eventually add.

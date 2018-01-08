@@ -3,7 +3,7 @@
 
 ## Description
 
-Fir is a ruby repl that is an alternative to IRB. Fir aims to bring some of the friendly features that the [fish](https://github.com/fish-shell/fish-shell) project brought to shells to a ruby repl. Though I originally intended Fir to be a full blown replacement for pry, it is unlikely that you can use it in that capacity, since pry offers so many damn good features that this project does not replicate.
+Fir is a ruby repl that is an alternative to IRB. Fir aims to bring some of the friendly features that the [fish](https://github.com/fish-shell/fish-shell) project brought to shells to a ruby repl.
 
 Fir does bring some features to the table that pry and other REPL's do not have. The key difference between pry, IRB, Ripl, etc, and Fir is that fir puts stdin into raw mode which allows us to provide features like autosuggestion a la fish, and automatically indenting/dedenting code as you type. Below is a gif of fir in action:
 

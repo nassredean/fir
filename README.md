@@ -37,7 +37,7 @@ Fir aims to bring familiar bash keyboard shortcuts that we all know and love, ho
 | Ctrl + n | Down Arrow | Next command in history (i.e. walk forward through the command history). | Implemented |
 | Ctrl + b | Left Arrow | Backward one character. | Implemented |
 | Ctrl + f | Right Arrow | Forward one character. | Implemented |
-| Ctrl + u | N/A | Cut the line before the cursor position               | Not implemented |
+| Ctrl + u | N/A | Cut the line before the cursor position               | Implemented |
 | Ctrl + d | N/A | Delete character under the cursor                     | Not implemented |
 | Ctrl + h | N/A | Delete character before the cursor (backspace)        | Not implemented |
 | Ctrl + w | N/A | Cut the Word before the cursor to the clipboard       | Not implemented |

@@ -15,4 +15,5 @@ Gem::Specification.new do |s|
   s.executables   = ['fir']
   s.require_paths = ['lib']
   s.license       = 'MIT'
+  s.required_ruby_version = '>= 2.3.0'
 end

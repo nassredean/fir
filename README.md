@@ -15,6 +15,7 @@ As the video demonstrates, fir is able to indent your code as soon as it is type
 ```
 gem install fir-repl
 ```
+**Note** fir requires Ruby 2.3.0 or greater.
 
 ## Usage
 ```

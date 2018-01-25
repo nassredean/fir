@@ -30,3 +30,16 @@ jobs:
           name: run tests
           command: |
             ./run_all_tests.rb
+  build_ruby_2_3:
+    docker:
+      # specify the version you desire here
+       - image: circleci/ruby:2.3-node-browsers
+
+    working_directory: ~/fir
+
+    steps:
+      - checkout
+      - run:
+          name: run tests
+          command: |
+            ./run_all_tests.rb

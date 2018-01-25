@@ -5,17 +5,17 @@
 
 Fir is a ruby repl that is an alternative to IRB. Fir aims to bring some of the friendly features that the [fish](https://github.com/fish-shell/fish-shell) project brought to shells to a ruby repl.
 
-Fir does bring some features to the table that pry and other REPL's do not have. The key difference between pry, IRB, Ripl, etc, and Fir is that fir puts stdin into raw mode which allows us to provide features like autosuggestion a la fish, and automatically indenting/dedenting code as you type. Below is a gif of fir in action:
+Fir does bring some features to the table that pry and other REPL's do not have. The key difference between pry, IRB, Ripl, etc, and Fir is that Fir puts stdin into raw mode which allows us to provide features like autosuggestion a la fish, and automatically indenting/dedenting code as you type. Below is a gif of Fir in action:
 
 ![Fir in Action](fir-example.gif?raw=true "Fir in action")
 
-As the video demonstrates, fir is able to indent your code as soon as it is typed, not just when you hit enter. It also can suggest lines from your history file as you type as well!
+As the video demonstrates, Fir is able to indent your code as soon as it is typed, not just when you hit enter. It also can suggest lines from your history file as you type as well!
 
 ## Install
 ```
 gem install fir-repl
 ```
-**Note** fir requires Ruby 2.3.0 or greater.
+**Note** Fir requires Ruby 2.3.0 or greater.
 
 ## Usage
 ```
@@ -33,7 +33,7 @@ Fir aims to bring familiar bash keyboard shortcuts that we all know and love, ho
 | Ctrl + c | N/A | Clear current state, and step out of the block. | Implemented |
 | Ctrl + d | N/A | Exit program. | Implemented |
 | Ctrl + v | N/A | Paste from system clipboard. | Implemented |
-| Ctrl + z | N/A | Put the running fir process in the background. | Implemented |
+| Ctrl + z | N/A | Put the running Fir process in the background. | Implemented |
 | Ctrl + p | Up Arrow | Previous command in history (i.e. walk back through the command history). | Implemented |
 | Ctrl + n | Down Arrow | Next command in history (i.e. walk forward through the command history). | Implemented |
 | Ctrl + b | Left Arrow | Backward one character. | Implemented |

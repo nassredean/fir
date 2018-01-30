@@ -43,3 +43,10 @@ jobs:
           name: run tests
           command: |
             ./run_all_tests.rb
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+      - build_ruby_2_4
+      - build_ruby_2_3

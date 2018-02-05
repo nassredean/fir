@@ -3,30 +3,37 @@
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
 version: 2
+
+.build_template: &build_definition
+  working_directory: ~/fir
+  steps:
+    - checkout
+    - run:
+        name: run tests
+        command: |
+          ./run_all_tests.rb
+
 jobs:
   build:
+    <<: *build_definition
     docker:
       # specify the version you desire here
        - image: circleci/ruby:2.5-node-browsers
-
-    working_directory: ~/fir
-
-    steps:
-      - checkout
-      - run:
-          name: run tests
-          command: |
-            ./run_all_tests.rb
   build_ruby_2_4:
+    <<: *build_definition
     docker:
       # specify the version you desire here
        - image: circleci/ruby:2.4-node-browsers
+  build_ruby_2_3:
+    <<: *build_definition
+    docker:
+      # specify the version you desire here
+       - image: circleci/ruby:2.3-node-browsers
 
-    working_directory: ~/fir
-
-    steps:
-      - checkout
-      - run:
-          name: run tests
-          command: |
-            ./run_all_tests.rb
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+      - build_ruby_2_4
+      - build_ruby_2_3
